@@ -368,7 +368,7 @@ bool GCP_Framework::Init( glm::ivec2 screenSize )
 	int winPosY = 100;
 	int winWidth = _screenSize.x;
 	int winHeight = _screenSize.y;
-	_SDLwindow = SDL_CreateWindow("My Window!!!",  // The first parameter is the window title
+	_SDLwindow = SDL_CreateWindow("GCP RayTracer",  // The first parameter is the window title
 		winPosX, winPosY,
 		winWidth, winHeight,
 		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);

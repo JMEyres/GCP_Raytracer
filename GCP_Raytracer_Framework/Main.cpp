@@ -1,14 +1,15 @@
-
 #include "GCP_GFX_Framework.h"
 
-
 #undef main
-
 
 int main(int argc, char* argv[])
 {
 	// Set window size
 	glm::ivec2 winSize(640, 480);
+
+	int numThreads = 2;
+
+	
 
 	// This will handle rendering to screen
 	GCP_Framework _myFramework;
@@ -27,6 +28,13 @@ int main(int argc, char* argv[])
 
 	_rayTracer.CreateSphere();
 
+	std::chrono::steady_clock::time_point time1 =
+		std::chrono::high_resolution_clock::now();
+
+
+	// essentially need to split this up into multiple rows and have a thread per row so would have window x the same and then window y/num threads to give each block
+	// then would would loop through all pixels in window x by block y
+
 	for (int i = 0; i < winSize.x; i++)
 	{
 		for (int j = 0; j < winSize.y; j++)
@@ -38,6 +46,18 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	std::chrono::steady_clock::time_point time2 =
+		std::chrono::high_resolution_clock::now();
+
+	std::chrono::milliseconds milliseconds =
+		std::chrono::duration_cast<std::chrono::milliseconds> (time2 - time1);
+
+	std::ofstream fs;
+	fs.open("../perfomance.txt");
+
+	fs << "Time taken: " << milliseconds.count() << "\n";
+
+	fs.close();
 
 	// Pushes the framebuffer to OpenGL and renders to screen
 	// Also contains an event loop that keeps the window going until it's closed
