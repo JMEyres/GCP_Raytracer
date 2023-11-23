@@ -26,5 +26,18 @@ Sphere::intersect Sphere::RayIntersect(Ray _ray)
 
 glm::vec3 Sphere::Shade(glm::vec3 point)
 {
-	return glm::vec3(1.0, 0.0, 0.0);
+	glm::vec3 lightSource = glm::normalize(glm::vec3(320.0f, 240.0f, -300.0f)); // vector pointing towards the light source not the light sources position in space
+	//currently every sphere will have the same shading as its hard set here rather than from a seperate light and calculated from that
+
+	glm::vec3 colour = glm::clamp(glm::dot(lightSource, GetNormal(point)), 0.0f, 1.0f) * glm::vec3(1, 1, 1) * glm::vec3(1, 0, 0);
+	return colour;
+}
+
+glm::vec3 Sphere::GetNormal(glm::vec3 point)
+{
+	glm::vec3 center = Position;
+
+	glm::vec3 normal = glm::normalize(point - center);// glm::vec3((point.x - center.x) / Radius, (point.y - center.y) / Radius, (point.z - center.z) / Radius);
+
+	return normal;
 }

@@ -10,17 +10,18 @@ glm::vec3 RayTracer::TraceRay(Ray ray)
 	
 		if (intersect.hit)
 		{
-			return glm::vec3(1, 0, 0);
+			return RayTracer::objectList[i]->Shade(intersect.intersectPos);
 		}
 	}
-	return glm::vec3(0);
+	return glm::vec3(0.34f, 0.34f, 0.32f);
+	//return glm::vec3(0);
 }
 
-void RayTracer::CreateSphere()
+void RayTracer::CreateSphere(glm::vec3 _pos, float _radius)
 {
 	Sphere *sphere = new Sphere();
-	sphere->Position = glm::vec3(320.0, 240.0, 200.0);
-	sphere->Radius = 150.0;
+	sphere->Position = _pos;;
+	sphere->Radius = _radius;;
 
 	objectList.push_back(sphere);
 }
