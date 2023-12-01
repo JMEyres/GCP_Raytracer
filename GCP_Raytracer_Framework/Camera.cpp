@@ -5,37 +5,31 @@ void Camera::setupCamera(glm::ivec2 windowSize)
 	viewport.width = (float)windowSize.x;
 	viewport.height = (float)windowSize.y;
 	viewport.near = 0.1f;
-	viewport.far = 100.0f;
+	viewport.far = 1000.0f;
 	
 	proj = glm::perspective(glm::radians(45.0f), viewport.width/viewport.height, viewport.near, viewport.far);
 	model = glm::mat4(1.0f);
 
 }
 
-Ray Camera::generateRay(glm::vec4 nearPoint, glm::vec4 farPoint)
+Ray Camera::generateRay(glm::vec4 pixelPosition)
 {
 	Ray ray;
 
 	// Convert coords to ndc
-	nearPoint.x = ((nearPoint.x / viewport.width) * 2) - 1;
-	nearPoint.y = ((nearPoint.y / viewport.height) * 2) - 1;
-	farPoint.x = ((farPoint.x / viewport.width) * 2) - 1;
-	farPoint.y = ((farPoint.y / viewport.height) * 2) - 1;
+	pixelPosition.x = ((pixelPosition.x / viewport.width) * 2) - 1;
+	pixelPosition.y = ((pixelPosition.y / viewport.height) * 2) - 1;
 
 	// Convert coords to Eye space
-	nearPoint = nearPoint * glm::inverse(proj);
-	farPoint = farPoint * glm::inverse(proj);
+	pixelPosition = pixelPosition * glm::inverse(proj);
 
 	// Convert coords to world space
-	nearPoint = nearPoint / nearPoint.w;
-	farPoint = farPoint / farPoint.w;
+	pixelPosition = pixelPosition / 1.0f;
 
 	// Define ray
-	ray.Origin = nearPoint;
-	ray.nearPoint = nearPoint;
-	ray.farPoint = farPoint;
-	ray.Direction = glm::normalize(farPoint - nearPoint);
-
+	ray.Origin = pixelPosition;
+	ray.Direction = glm::normalize(glm::vec4(0,0,-10, 0) - pixelPosition);
+	//std::cout << ray.Origin.x << std::endl;
 	return ray;
 }
 

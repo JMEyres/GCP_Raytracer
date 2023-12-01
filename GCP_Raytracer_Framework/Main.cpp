@@ -9,8 +9,6 @@ int main(int argc, char* argv[])
 
 	int numThreads = 2;
 
-	
-
 	// This will handle rendering to screen
 	GCP_Framework _myFramework;
 
@@ -27,8 +25,8 @@ int main(int argc, char* argv[])
 	_camera.setupCamera(winSize);
 	_myFramework.SetAllPixels(glm::vec3(0));
 
-	_rayTracer.CreateSphere(glm::vec3(320.0, 240.0, 200.0), 50.0f);
-	_rayTracer.CreateSphere(glm::vec3(120.0, 360.0, 200.0), 50.0f);
+	_rayTracer.CreateSphere(glm::vec3(0.05f, 0.05f, 100.0f), 0.01f);
+	//_rayTracer.CreateSphere(glm::vec3(120.0, 360.0, 200.0,), 50.0f);
 
 	std::chrono::steady_clock::time_point time1 =
 		std::chrono::high_resolution_clock::now();
@@ -42,7 +40,7 @@ int main(int argc, char* argv[])
 		for (int j = 0; j < winSize.y; j++)
 		{
 			glm::ivec2 pixelPosition = {i, j};
-			Ray ray = _camera.generateRay(glm::vec4(pixelPosition.x, pixelPosition.y,-1,1), glm::vec4(pixelPosition.x, pixelPosition.y,1,1));
+			Ray ray = _camera.generateRay(glm::vec4(pixelPosition.x, pixelPosition.y,100.0f,1));
 			glm::vec3 pixelColour = _rayTracer.TraceRay(ray);
 			_myFramework.DrawPixel(pixelPosition, pixelColour);
 		}
