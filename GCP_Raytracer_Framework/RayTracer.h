@@ -13,7 +13,7 @@ public:
 
 	glm::vec3 TraceRay(Ray ray);
 
-	void CreateSphere(glm::vec3 _pos, float _radius, Camera _camera);
+	void CreateSphere(glm::vec3 _pos, float _radius);
 private:
 
 };
