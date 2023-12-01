@@ -25,8 +25,9 @@ int main(int argc, char* argv[])
 	_camera.setupCamera(winSize);
 	_myFramework.SetAllPixels(glm::vec3(0));
 
-	_rayTracer.CreateSphere(glm::vec3(0.05f, 0.05f, 100.0f), 0.01f);
-	//_rayTracer.CreateSphere(glm::vec3(120.0, 360.0, 200.0,), 50.0f);
+	_rayTracer.CreateSphere(glm::vec3(1.0f, 1.0f, -10.0f), 1.0f, _camera);
+	_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f, _camera);
+
 
 	std::chrono::steady_clock::time_point time1 =
 		std::chrono::high_resolution_clock::now();
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
 		for (int j = 0; j < winSize.y; j++)
 		{
 			glm::ivec2 pixelPosition = {i, j};
-			Ray ray = _camera.generateRay(glm::vec4(pixelPosition.x, pixelPosition.y,100.0f,1));
+			Ray ray = _camera.castRay(pixelPosition.x, pixelPosition.y, _camera.proj, _camera.view);
 			glm::vec3 pixelColour = _rayTracer.TraceRay(ray);
 			_myFramework.DrawPixel(pixelPosition, pixelColour);
 		}

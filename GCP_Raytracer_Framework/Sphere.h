@@ -18,6 +18,7 @@ public:
 	intersect RayIntersect(Ray ray);
 	glm::vec3 Shade(glm::vec3 point);
 	glm::vec3 GetNormal(glm::vec3 point);
+	Sphere convertSphereToNDC(Sphere& sphere, glm::mat4& view, glm::mat4& proj, int vpWidth, int vpHeight);
 private:
 
 };

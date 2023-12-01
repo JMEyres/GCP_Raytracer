@@ -1,2 +1,9 @@
-﻿  Main.cpp
+﻿  Camera.cpp
+  GCP_GFX_Framework.cpp
+  Main.cpp
+  Ray.cpp
+  RayTracer.cpp
+  Sphere.cpp
+  Generating Code...
+  glew.c
   GCP_Raytracer_Framework.vcxproj -> C:\Users\joshu\Documents\Github\GCP_Raytracer\x64\Debug\GCP_Raytracer_Framework.exe

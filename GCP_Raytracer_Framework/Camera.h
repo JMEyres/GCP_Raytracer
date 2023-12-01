@@ -23,7 +23,7 @@ public:
 
 	Ray GetRay(glm::ivec2 windowPos);
 	void setupCamera(glm::ivec2 windowSize);
-	Ray generateRay(glm::vec4 pixelPosition); // convert from screen space coords to ndc coords
+	Ray castRay(int x, int y, glm::mat4& proj, glm::mat4& view); // convert from screen space coords to ndc coords
 
 	// convert screen size to -1 -> 1 z = -1 for near plane z = 1 for far plane w = 1 for both
 	// create ray from near plane to far plane, coordinate on near plane give ray origin, direction from near point to far point give ray direction

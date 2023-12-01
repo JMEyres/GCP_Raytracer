@@ -4,15 +4,16 @@
 #include<vector>
 #include "Sphere.h"
 #include "Ray.h"
+#include "Camera.h"
 
 class RayTracer
 {
 public:
-	std::vector<Sphere*> objectList;
+	std::vector<Sphere> objectList;
 
 	glm::vec3 TraceRay(Ray ray);
 
-	void CreateSphere(glm::vec3 _pos, float _radius);
+	void CreateSphere(glm::vec3 _pos, float _radius, Camera _camera);
 private:
 
 };
