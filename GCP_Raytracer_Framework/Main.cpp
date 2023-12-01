@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 	RayTracer _rayTracer;
 	Camera _camera;
 
+	_camera.setupCamera(winSize);
 	_myFramework.SetAllPixels(glm::vec3(0));
 
 	_rayTracer.CreateSphere(glm::vec3(320.0, 240.0, 200.0), 50.0f);
@@ -41,7 +42,7 @@ int main(int argc, char* argv[])
 		for (int j = 0; j < winSize.y; j++)
 		{
 			glm::ivec2 pixelPosition = {i, j};
-			Ray ray = _camera.GetRay(pixelPosition);
+			Ray ray = _camera.generateRay(glm::vec4(pixelPosition.x, pixelPosition.y,-1,1), glm::vec4(pixelPosition.x, pixelPosition.y,1,1));
 			glm::vec3 pixelColour = _rayTracer.TraceRay(ray);
 			_myFramework.DrawPixel(pixelPosition, pixelColour);
 		}

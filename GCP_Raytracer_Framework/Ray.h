@@ -5,8 +5,11 @@
 class Ray
 {
 public:
+	glm::vec4 nearPoint, farPoint; // set these in screen coords then convert to ndc
+	glm::vec4 ndcNearPoint, ndcFarPoint;
+
 	glm::vec3 Origin;
-	glm::vec3 Direction = glm::vec3(1, 0, 0);
+	glm::vec3 Direction;
 
 private:
 
