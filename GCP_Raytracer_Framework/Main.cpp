@@ -25,13 +25,14 @@ int main(int argc, char* argv[])
 	_camera.setupCamera(winSize);
 	_myFramework.SetAllPixels(glm::vec3(0));
 
-	_rayTracer.CreateSphere(glm::vec3(1.0f, 1.0f, -10.0f), 1.0f);
-	_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f);
+	_rayTracer.CreateSphere(glm::vec3(1.0f, 1.0f, -10.0f), 1.0f, glm::vec3 (1.0f,0.0f,0.0f),0);
+	_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f, glm::vec3(0.0f, 0.0f, 0.0f),2.0f);
 
 
 	std::chrono::steady_clock::time_point time1 =
 		std::chrono::high_resolution_clock::now();
 
+	
 
 	// essentially need to split this up into multiple rows and have a thread per row so would have window x the same and then window y/num threads to give each block
 	// then would would loop through all pixels in window x by block y

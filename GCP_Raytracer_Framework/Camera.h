@@ -1,9 +1,9 @@
 #pragma once
-#include<iostream>
-#include<GLM/glm.hpp>
-#include<GLM/ext.hpp>
-#include<vector>
-#include"Ray.h"
+#include <iostream>
+#include <GLM/glm.hpp>
+#include <GLM/ext.hpp>
+#include <vector>
+#include "Ray.h"
 
 class Camera
 {

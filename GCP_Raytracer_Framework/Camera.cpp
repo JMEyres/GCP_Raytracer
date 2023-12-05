@@ -20,12 +20,12 @@ Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex r
 	glm::vec4 vp = glm::vec4(0, 0, viewport.width, viewport.height);
 	y = (int)vp.w - y;
 
-	glm::vec3 near = glm::unProject(glm::vec3(x, y, -1), view, proj, vp); // make function mine rather than using glm::unproject few extra marks
+	glm::vec3 near = glm::unProject(glm::vec3(x, y, -1), view, proj, vp); // make function mine rather than using glm::unproject
 	glm::vec3 far = glm::unProject(glm::vec3(x, y, 1), view, proj, vp);
 
 	ray.Direction = glm::normalize(far - near);
 	ray.Origin = near;
-	//std::cout << ray.Origin.x << std::endl;
+	
 	return ray;
 }
 
