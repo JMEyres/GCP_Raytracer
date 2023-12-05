@@ -23,4 +23,9 @@ namespace Utils
 
 	glm::vec3 RandomInUnitSphere();
 	glm::vec3 RandomOnHemisphere(glm::vec3& normal);
+
+	float RandomValue(int state);
+	float RandomValueNormalDistrib(int state);
+	glm::vec3 RandomDirection(int state);
+	glm::vec3 RandomHemisphereDirection(glm::vec3 normal, int state);
 };

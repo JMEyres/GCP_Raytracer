@@ -54,3 +54,33 @@ glm::vec3 Utils::GetNormal(glm::vec3 point, glm::vec3 spherePos)
 
 	return normal;
 }
+
+////////////////////////
+
+float Utils::RandomValue(int state)
+{
+	state = state * 747796405 + 2891336453;
+	int result = ((state >> ((state >> 28) + 4)) ^ state) * 277803737;
+	return state / 4294967295.0f;
+}
+
+float Utils::RandomValueNormalDistrib(int state) // random value in normal distribution
+{
+	float theta = 2.0f * pi * RandomValue(state);
+	float rho = sqrt(-2 * log(RandomValue(state)));
+	return rho * cos(theta);
+}
+
+glm::vec3 Utils::RandomHemisphereDirection(glm::vec3 normal, int state)
+{
+	glm::vec3 dir = Utils::RandomDirection(state);
+	return dir * glm::sign(glm::dot(normal, dir));
+}
+
+glm::vec3 Utils::RandomDirection(int state)
+{
+	float x = RandomValueNormalDistrib(state);
+	float y = RandomValueNormalDistrib(state);
+	float z = RandomValueNormalDistrib(state);
+	return glm::normalize(glm::vec3(x, y, z));
+}

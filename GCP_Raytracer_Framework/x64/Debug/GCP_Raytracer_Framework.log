@@ -1,2 +1,7 @@
 ﻿  RayTracer.cpp
+C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(42,33): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(42,33): warning C4244:         with
+C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(42,33): warning C4244:         [
+C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(42,33): warning C4244:             T=float
+C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(42,33): warning C4244:         ]
   GCP_Raytracer_Framework.vcxproj -> C:\Users\joshu\Documents\Github\GCP_Raytracer\x64\Debug\GCP_Raytracer_Framework.exe

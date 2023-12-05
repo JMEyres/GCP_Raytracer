@@ -38,8 +38,9 @@ glm::vec3 RayTracer::RayColor(Ray& ray, Sphere::Intersect& intersect, Sphere& sp
 		if (intersect.hit)
 		{
 			glm::vec3 normal = Utils::GetNormal(intersect.intersectPos, sphere.Position);
-			glm::vec3 direction = Utils::RandomOnHemisphere(normal);
-			
+			glm::vec3 direction = Utils::RandomHemisphereDirection(normal,
+				(ray.Origin.y * (640 * 480) + ray.Origin.x));
+			std::cout << direction.x << " " << direction.y << direction.z << std::endl;
 			ray.Origin = intersect.intersectPos;
 			ray.Direction = direction;
 
