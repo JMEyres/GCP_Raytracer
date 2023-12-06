@@ -33,26 +33,19 @@ glm::vec3 RayTracer::RayColor(Ray& ray, Sphere::Intersect& intersect, Sphere& sp
 {
 	glm::vec3 incomingLight = glm::vec3(0);
 	glm::vec3 rayColor = glm::vec3(1);
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		if (intersect.hit)
-		{
-			glm::vec3 normal = Utils::GetNormal(intersect.intersectPos, sphere.Position);
-			glm::vec3 direction = Utils::RandomOnHemisphere(normal);
-			
-			ray.Origin = intersect.intersectPos;
-			ray.Direction = direction;
-
-			RayTracingMaterial material = intersect.intersectMaterial;
-			glm::vec3 emittedLight = material.emissionColour * material.emissionStrength;
-			incomingLight += emittedLight * rayColor;
-			rayColor *= material.colour;
-		}
-		else
-		{
-			break;
-		}
+		glm::vec3 normal = Utils::GetNormal(intersect.intersectPos, sphere.Position);
+		glm::vec3 direction = Utils::RandomHemisphereDirection(normal);
+		
+		ray.Origin = intersect.intersectPos;
+		ray.Direction = direction;
+		//std::cout << direction.x << " " << direction.y << " " << direction.z << std::endl;
+		RayTracingMaterial material = intersect.intersectMaterial;
+		glm::vec3 emittedLight = material.emissionColour * material.emissionStrength;
+		incomingLight += emittedLight * rayColor;
+		rayColor *= material.colour;
 	}
 
-	return incomingLight;
+	return rayColor;
 }

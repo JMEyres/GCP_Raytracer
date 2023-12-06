@@ -26,8 +26,7 @@ int main(int argc, char* argv[])
 	_myFramework.SetAllPixels(glm::vec3(0));
 
 	_rayTracer.CreateSphere(glm::vec3(1.0f, 1.0f, -10.0f), 1.0f, glm::vec3 (1.0f,0.0f,0.0f),0);
-	_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f, glm::vec3(0.0f, 0.0f, 0.0f),2.0f);
-
+	_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f, glm::vec3(0.0f, 1.0f, 0.0f),2.0f);
 
 	std::chrono::steady_clock::time_point time1 =
 		std::chrono::high_resolution_clock::now();
