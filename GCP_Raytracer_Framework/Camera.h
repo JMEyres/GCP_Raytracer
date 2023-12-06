@@ -21,16 +21,11 @@ public:
 	Viewport viewport;
 	glm::vec4 raycoords;
 
-	Ray GetRay(glm::ivec2 windowPos);
+	float cameraAngleX, cameraAngleY = 0.0f;
+
+	//Ray GetRay(glm::ivec2 windowPos); // Old ray generation
 	void setupCamera(glm::ivec2 windowSize);
 	Ray castRay(int x, int y, glm::mat4& proj, glm::mat4& view); // convert from screen space coords to ndc coords
-
-	// convert screen size to -1 -> 1 z = -1 for near plane z = 1 for far plane w = 1 for both
-	// create ray from near plane to far plane, coordinate on near plane give ray origin, direction from near point to far point give ray direction
-	// Multiply the coordinated by the inverse projection matrix to convert to eye space
-	// divide by w to convert from left handed to right handed coordinates
-	// if keeping camera at 0,0,0 view matrix is just identity matrix
-	// this should give two sets of coordinates in world space that can be used to define ray 
 private:
 
 };

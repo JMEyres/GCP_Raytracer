@@ -7,15 +7,28 @@
 #include "Camera.h"
 #include "Utils.h"
 
+class GCP_Framework;
 class RayTracer
 {
 public:
+	struct HitInfo
+	{
+		float hitDistance;
+		glm::vec3 hitPos;
+		glm::vec3 hitNormal;
+		int objectIndex;
+	};
+
 	std::vector<Sphere> objectList;
 
-	glm::vec3 TraceRay(Ray ray);
-	glm::vec3 RayColor(Ray& ray, Sphere::Intersect& intersect, Sphere& sphere);
-
+	void Render(Camera& camera, GCP_Framework& framework);
 	void CreateSphere(glm::vec3 _pos, float _radius, glm::vec3 _color, float emissionStrength);
-private:
 
+	glm::vec4 PerPixel(int x, int y);
+	
+	HitInfo TraceRay(const Ray& ray);
+	HitInfo ClosestHit(const Ray& ray, float hitDistance, int objectIndex);
+	HitInfo Miss(const Ray& ray);
+private:
+	Camera* activeCamera = nullptr;
 };

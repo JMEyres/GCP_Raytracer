@@ -1,2 +1,3 @@
 ﻿  RayTracer.cpp
-  GCP_Raytracer_Framework.vcxproj -> C:\Users\joshu\Documents\Github\GCP_Raytracer\x64\Debug\GCP_Raytracer_Framework.exe
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(79): warning C4715: 'RayTracer::TraceRay': not all control paths return a value
+  GCP_Raytracer_Framework.vcxproj -> C:\Users\joshu\Github\GCP_Raytracer\x64\Debug\GCP_Raytracer_Framework.exe

@@ -11,17 +11,9 @@ class Sphere
 public:
 	glm::vec3 Position;
 	float Radius;
-	struct Intersect
-	{
-		bool hit;
-		glm::vec3 intersectPos;
-		RayTracingMaterial intersectMaterial;
-
-	};
-	RayTracingMaterial material;
-
-	Intersect RayIntersect(Ray ray);
-	glm::vec3 Shade(glm::vec3 point);
+	glm::vec3 colour;
+	
+	//glm::vec3 Shade(glm::vec3 point, Ray ray);
 	
 private:
 
