@@ -14,13 +14,6 @@ void Camera::setupCamera(glm::ivec2 windowSize)
 	model = glm::mat4(1.0f);
 }
 
-void Camera::updateCameraView()
-{
-
-	view = glm::translate((glm::rotate(glm::mat4(1.0f), cameraAngleY, glm::vec3(1, 0, 0)) *
-		glm::rotate(glm::mat4(1.0f), cameraAngleX, glm::vec3(0, 1, 0))), glm::vec3(0, 2, -3.5f));
-}
-
 Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex ray generation
 {
 	Ray ray;

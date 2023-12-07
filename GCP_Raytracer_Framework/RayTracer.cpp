@@ -40,7 +40,7 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 	float multiplier = 1.0f; // have multiplier so it isnt just full color forever
 
 
-	int bounces = 2;
+	int bounces = 5;
 	for (int i = 0; i < bounces; ++i)
 	{
 		// actual intersection check returning hit distance, position, normal and the object index of what is hit
@@ -48,7 +48,7 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 
 		if (hitInfo.hitDistance < 0) // if ray hits nothing
 		{
-			glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f); // currently sky is just black, could be changed to something else
+			glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f);
 			color += skyColor * multiplier;
 			break;
 		}
@@ -60,11 +60,12 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 
 		glm::vec3 sphereColor = sphere.mat.albedo;
 		sphereColor *= lightIntensity;
-		//color += sphereColor * multiplier;
+		color += sphereColor * multiplier;
 		multiplier *= 0.5f; // makes it properly fade in the reflection
 
 		ray.origin = hitInfo.hitPos + 0.0001f; // have to add a small offset so that the new ray isnt inside the sphere
 		ray.direction = glm::reflect(hitInfo.hitPos, hitInfo.hitNormal + sphere.mat.roughness * Utils::RandomVector()); // reflect the ray incoming 
+		// introduced roughness this could be improved with path tracing and accumulating images so they improve over time
 	}
 
 	return glm::vec4(color, 1.0f); // return color with an alpha of 1
