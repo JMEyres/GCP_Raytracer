@@ -7,4 +7,5 @@ namespace Utils
 	glm::vec3 GetNormal(glm::vec3 point, glm::vec3 spherePos);
 
 	glm::vec3 RandomVector();
+	glm::vec3 InUnitSphere();
 };

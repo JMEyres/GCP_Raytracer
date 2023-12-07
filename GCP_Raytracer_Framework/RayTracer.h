@@ -22,9 +22,11 @@ public:
 	};
 
 	std::vector<Sphere> objectList;
+	std::vector<Material> materialList;
 
 	void Render(Camera& camera, GCP_Framework& framework);
-	void CreateSphere(glm::vec3 _pos, float _radius, glm::vec3 _color, float roughness, float metalness);
+	void CreateSphere(glm::vec3 _pos, float _radius, int matIndex);
+	void CreateMats();
 
 	glm::vec4 PerPixel(int x, int y);
 	

@@ -16,3 +16,11 @@ glm::vec3 Utils::RandomVector()
 	float z = (float)rand();
 	return glm::normalize(glm::vec3(x, y, z));
 }
+
+glm::vec3 Utils::InUnitSphere()
+{
+	float x = glm::clamp((float)rand(), -1.0f, 1.0f);
+	float y = glm::clamp((float)rand(), -1.0f, 1.0f);
+	float z = glm::clamp((float)rand(), -1.0f, 1.0f);
+	return glm::normalize(glm::vec3(x, y, z));
+}

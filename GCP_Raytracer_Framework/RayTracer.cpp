@@ -43,24 +43,53 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 
 }
 
-void RayTracer::CreateSphere(glm::vec3 pos, float radius, glm::vec3 color, float roughness, float metalness)
+void RayTracer::CreateSphere(glm::vec3 pos, float radius, int matIndex)
 {
 	Sphere sphere;
 	sphere.position = pos;;
 	sphere.radius = radius;
-	sphere.mat.albedo = color;
-	sphere.mat.roughness = roughness;
-	sphere.mat.metalness = metalness;
-
+	sphere.matIndex = matIndex;
 	objectList.push_back(sphere);
 }
 
+
+void RayTracer::CreateMats()
+{
+	//glm::vec3 _color, float roughness, float metalness, glm::vec3 emissionColor, float emissionStrength
+	Material orangeSphere;
+	orangeSphere.albedo = glm::vec3(0.8f, 0.5f, 0.2f);
+	orangeSphere.roughness = 0.1f;
+	orangeSphere.emissionColor = orangeSphere.albedo;
+	orangeSphere.emissionStrength = 2.0f;
+	materialList.push_back(orangeSphere);
+
+	Material blueSphere;
+	blueSphere.albedo = glm::vec3(0, 0, 1);
+	blueSphere.roughness = 0.1f;
+	materialList.push_back(blueSphere);
+
+	Material redSphere;
+	redSphere.albedo = glm::vec3(1, 0, 0);
+	redSphere.roughness = 0.1f;
+	materialList.push_back(redSphere);
+
+	Material greenSphere;
+	greenSphere.albedo = glm::vec3(0, 1, 0);
+	greenSphere.roughness = 0.0f;
+	materialList.push_back(greenSphere);
+
+	Material whiteSphere;
+	whiteSphere.albedo = glm::vec3(1, 1, 1);
+	whiteSphere.roughness = 0.1f;
+	materialList.push_back(whiteSphere);
+
+}
 glm::vec4 RayTracer::PerPixel(int x, int y)
 {
 	Ray ray = activeCamera->castRay(x, y, activeCamera->proj, activeCamera->view); // complex ray generation per pixel on screen
 
-	glm::vec3 color(0.0f); // initialise color
-	float multiplier = 1.0f; // have multiplier so it isnt just full color forever
+	glm::vec3 light(0.0f); // initialise color
+	glm::vec3 throughput = glm::vec3(1.0f); // have multiplier so it isnt just full color forever
 
 
 	int bounces = 5;
@@ -71,28 +100,23 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 
 		if (hitInfo.hitDistance < 0) // if ray hits nothing
 		{
-			//glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f);
-			glm::vec3 skyColor = glm::vec3(0);
-			color += skyColor * multiplier;
+			glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f); // spheres appear to reflect the sky giving them a strange tint
+			//light += skyColor * throughput;
 			break;
 		}
 
-		glm::vec3 lightDir = glm::normalize(glm::vec3(-1.0f)); // light direction not position, so from the sphere rather than to it
-		float lightIntensity = glm::max(glm::dot(hitInfo.hitNormal, -lightDir), 0.0f);
-
 		Sphere& sphere = RayTracer::objectList[hitInfo.objectIndex]; // set sphere to object that was hit
 
-		glm::vec3 sphereColor = sphere.mat.albedo;
-		sphereColor *= lightIntensity;
-		color += sphereColor * multiplier;
-		multiplier *= 0.5f; // makes it properly fade in the reflection
+		throughput *= materialList[sphere.matIndex].albedo;
+		light += materialList[sphere.matIndex].GetEmission(); 
 
-		ray.origin = hitInfo.hitPos + 0.0001f; // have to add a small offset so that the new ray isnt inside the sphere
-		ray.direction = glm::reflect(hitInfo.hitPos, hitInfo.hitNormal + sphere.mat.roughness * Utils::RandomVector()); // reflect the ray incoming 
+		ray.origin = hitInfo.hitPos + hitInfo.hitNormal * 0.0001f; // have to add a small offset so that the new ray isnt inside the sphere
+		//ray.direction = glm::reflect(hitInfo.hitPos, hitInfo.hitNormal + materialList[sphere.matIndex].roughness * Utils::RandomVector()); // reflect the ray incoming 
+		ray.direction = glm::normalize(hitInfo.hitNormal + Utils::InUnitSphere());
 		// introduced roughness this could be improved with path tracing and accumulating images so they improve over time
 	}
 
-	return glm::vec4(color, 1.0f); // return color with an alpha of 1
+	return glm::vec4(light, 1.0f); // return color with an alpha of 1
 }
 
 RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
