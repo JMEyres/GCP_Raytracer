@@ -87,6 +87,9 @@ void RayTracer::CreateMats()
 glm::vec4 RayTracer::PerPixel(int x, int y)
 {
 	Ray ray = activeCamera->castRay(x, y, activeCamera->proj, activeCamera->view); // complex ray generation per pixel on screen
+	//Ray ray;
+	//ray.origin = activeCamera->pos;
+	//ray.direction = activeCamera->GetRayDirections()[x + y * activeCamera->viewport.width];
 
 	glm::vec3 light(0.0f); // initialise color
 	glm::vec3 throughput = glm::vec3(1.0f); // have multiplier so it isnt just full color forever
@@ -125,9 +128,9 @@ RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
 	int closestSphere = -1;
 	float hitDistance = std::numeric_limits<float>::max();
 
-	for (int i = 0; i < RayTracer::objectList.size(); i++) // loop through all created objects
+	for (size_t i = 0; i < objectList.size(); i++) // loop through all created objects
 	{
-		Sphere sphere = RayTracer::objectList[i]; // set sphere to current object
+		Sphere& sphere = objectList[i]; // set sphere to current object
 
 		// intersection check using quadratic formula
 		glm::vec3 origin = ray.origin - sphere.position;
@@ -140,17 +143,17 @@ RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
 			continue;
 
 		float closestT = (-b - glm::sqrt(discriminant)) / (2.0f * a);
-		if (closestT > 0 && closestT < hitDistance)
+		if (closestT > 0.0f && closestT < hitDistance)
 		{
 			hitDistance = closestT;
 			closestSphere = (int)i;
 		}
+	}
+	if (closestSphere < 0) // if nothing hit ray has missed
+		return Miss(ray);
 
-		if (closestSphere < 0) // if nothing hit ray has missed
-			return Miss(ray);
+	return ClosestHit(ray, hitDistance, closestSphere);
 
-		return ClosestHit(ray, hitDistance, closestSphere);
-	}	
 }
 
 RayTracer::HitInfo RayTracer::ClosestHit(const Ray& ray, float hitDistance, int objectIndex) // define what is the closest object to be hit
@@ -159,7 +162,7 @@ RayTracer::HitInfo RayTracer::ClosestHit(const Ray& ray, float hitDistance, int 
 	hitInfo.hitDistance = hitDistance;
 	hitInfo.objectIndex = objectIndex;
 
-	Sphere& closestSphere = RayTracer::objectList[objectIndex];
+	Sphere& closestSphere = objectList[objectIndex];
 	glm::vec3 origin = ray.origin - closestSphere.position;
 	hitInfo.hitPos = origin + ray.direction * hitDistance;
 	hitInfo.hitNormal = glm::normalize(hitInfo.hitPos);
