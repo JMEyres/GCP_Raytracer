@@ -35,6 +35,7 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 	glm::vec3 color(0.0f); // initialise color
 	float multiplier = 1.0f; // have multiplier so it isnt just full color forever
 
+
 	int bounces = 2;
 	for (int i = 0; i < bounces; ++i)
 	{
@@ -43,7 +44,7 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 
 		if (hitInfo.hitDistance < 0) // if ray hits nothing
 		{
-			glm::vec3 skyColor = glm::vec3(0, 0, 0); // currently sky is just black, could be changed to something else
+			glm::vec3 skyColor = glm::vec3(0.0f, 0.0f, 0.0f); // currently sky is just black, could be changed to something else
 			color += skyColor * multiplier;
 			break;
 		}

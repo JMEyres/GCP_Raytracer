@@ -169,7 +169,6 @@
     <ClInclude Include="GCP_GFX_Framework.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RayTracer.h" />
-    <ClInclude Include="RayTracingMaterial.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

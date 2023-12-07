@@ -2,7 +2,6 @@
 #include <iostream>
 #include <GLM/glm.hpp>
 #include <GLM/ext.hpp>
-#include <vector>
 #include "Ray.h"
 
 class Camera
@@ -17,11 +16,7 @@ class Camera
 	};
 public:
 	glm::mat4 proj, view, model;
-	float aspectRatio;
 	Viewport viewport;
-	glm::vec4 raycoords;
-
-	float cameraAngleX, cameraAngleY = 0.0f;
 
 	//Ray GetRay(glm::ivec2 windowPos); // Old ray generation
 	void setupCamera(glm::ivec2 windowSize);
