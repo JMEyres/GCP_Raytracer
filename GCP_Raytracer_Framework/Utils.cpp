@@ -8,3 +8,11 @@ glm::vec3 Utils::GetNormal(glm::vec3 point, glm::vec3 spherePos)
 
 	return normal;
 }
+
+glm::vec3 Utils::RandomVector()
+{
+	float x = (float)rand();
+	float y = (float)rand();
+	float z = (float)rand();
+	return glm::normalize(glm::vec3(x, y, z));
+}

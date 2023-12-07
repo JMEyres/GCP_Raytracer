@@ -13,19 +13,22 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 	{
 		for (int j = 0; j < camera.viewport.height; j++)
 		{
-			glm::ivec2 pixelPosition = { i, j };
-			glm::vec4 pixelColour = PerPixel(pixelPosition.x, pixelPosition.y);
-			framework.DrawPixel(pixelPosition, pixelColour);
+			glm::ivec2 pixelPosition = { i, j }; // get the current pixel position
+			glm::vec4 pixelColour = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
+			framework.DrawPixel(pixelPosition, pixelColour); // draw the pixel
 		}
 	}
 }
 
-void RayTracer::CreateSphere(glm::vec3 _pos, float _radius, glm::vec3 _color)
+void RayTracer::CreateSphere(glm::vec3 pos, float radius, glm::vec3 color, float roughness, float metalness)
 {
 	Sphere sphere;
-	sphere.Position = _pos;;
-	sphere.Radius = _radius;
-	sphere.colour = _color;
+	sphere.position = pos;;
+	sphere.radius = radius;
+	sphere.mat.albedo = color;
+	sphere.mat.roughness = roughness;
+	sphere.mat.metalness = metalness;
+
 	objectList.push_back(sphere);
 }
 
@@ -45,42 +48,43 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 
 		if (hitInfo.hitDistance < 0) // if ray hits nothing
 		{
-			glm::vec3 skyColor = glm::vec3(0.0f, 0.0f, 0.0f); // currently sky is just black, could be changed to something else
+			glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f); // currently sky is just black, could be changed to something else
 			color += skyColor * multiplier;
 			break;
 		}
 
-		glm::vec3 lightDir = glm::normalize(glm::vec3(0.0f,1.0f,0.0f)); // light direction not position, so from the sphere rather than to it
+		glm::vec3 lightDir = glm::normalize(glm::vec3(-1.0f)); // light direction not position, so from the sphere rather than to it
 		float lightIntensity = glm::max(glm::dot(hitInfo.hitNormal, -lightDir), 0.0f);
 
-		Sphere& sphere = RayTracer::objectList[hitInfo.objectIndex];
+		Sphere& sphere = RayTracer::objectList[hitInfo.objectIndex]; // set sphere to object that was hit
 
-		glm::vec3 sphereColor = sphere.colour;
+		glm::vec3 sphereColor = sphere.mat.albedo;
 		sphereColor *= lightIntensity;
-		color += sphereColor * multiplier;
-		multiplier *= 0.7f; // makes it properly fade in the reflection
+		//color += sphereColor * multiplier;
+		multiplier *= 0.5f; // makes it properly fade in the reflection
 
-		ray.Origin = hitInfo.hitPos + 0.0001f;
-		ray.Direction = glm::reflect(hitInfo.hitPos, hitInfo.hitNormal); // reflect the ray incoming 
+		ray.origin = hitInfo.hitPos + 0.0001f; // have to add a small offset so that the new ray isnt inside the sphere
+		ray.direction = glm::reflect(hitInfo.hitPos, hitInfo.hitNormal + sphere.mat.roughness * Utils::RandomVector()); // reflect the ray incoming 
 	}
 
-	return glm::vec4(color, 1.0f);
+	return glm::vec4(color, 1.0f); // return color with an alpha of 1
 }
-
 
 RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
 {
+	// init vars
 	int closestSphere = -1;
 	float hitDistance = std::numeric_limits<float>::max();
 
-	for (int i = 0; i < RayTracer::objectList.size(); i++)
+	for (int i = 0; i < RayTracer::objectList.size(); i++) // loop through all created objects
 	{
-		Sphere sphere = RayTracer::objectList[i];
+		Sphere sphere = RayTracer::objectList[i]; // set sphere to current object
 
-		glm::vec3 origin = ray.Origin - sphere.Position;
-		float a = glm::dot(ray.Direction, ray.Direction);
-		float b = 2.0f * glm::dot(origin, ray.Direction);
-		float c = glm::dot(origin, origin) - sphere.Radius * sphere.Radius;
+		// intersection check using quadratic formula
+		glm::vec3 origin = ray.origin - sphere.position;
+		float a = glm::dot(ray.direction, ray.direction);
+		float b = 2.0f * glm::dot(origin, ray.direction);
+		float c = glm::dot(origin, origin) - sphere.radius * sphere.radius;
 
 		float discriminant = b * b - 4.0f * a * c;
 		if (discriminant < 0.0f)
@@ -93,14 +97,13 @@ RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
 			closestSphere = (int)i;
 		}
 
-		if (closestSphere < 0)
+		if (closestSphere < 0) // if nothing hit ray has missed
 			return Miss(ray);
 
 		return ClosestHit(ray, hitDistance, closestSphere);
-	}
-
-	
+	}	
 }
+
 RayTracer::HitInfo RayTracer::ClosestHit(const Ray& ray, float hitDistance, int objectIndex) // define what is the closest object to be hit
 {
 	RayTracer::HitInfo hitInfo;
@@ -108,14 +111,15 @@ RayTracer::HitInfo RayTracer::ClosestHit(const Ray& ray, float hitDistance, int 
 	hitInfo.objectIndex = objectIndex;
 
 	Sphere& closestSphere = RayTracer::objectList[objectIndex];
-	glm::vec3 origin = ray.Origin - closestSphere.Position;
-	hitInfo.hitPos = origin + ray.Direction * hitDistance;
+	glm::vec3 origin = ray.origin - closestSphere.position;
+	hitInfo.hitPos = origin + ray.direction * hitDistance;
 	hitInfo.hitNormal = glm::normalize(hitInfo.hitPos);
 
-	hitInfo.hitPos += closestSphere.Position;
+	hitInfo.hitPos += closestSphere.position;
 
 	return hitInfo;
 };
+
 RayTracer::HitInfo RayTracer::Miss(const Ray& ray) 
 {
 	RayTracer::HitInfo hitinfo;

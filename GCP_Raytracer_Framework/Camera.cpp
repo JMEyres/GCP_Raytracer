@@ -14,10 +14,11 @@ void Camera::setupCamera(glm::ivec2 windowSize)
 	model = glm::mat4(1.0f);
 }
 
-void Camera::updateCamera()
+void Camera::updateCameraView()
 {
+
 	view = glm::translate((glm::rotate(glm::mat4(1.0f), cameraAngleY, glm::vec3(1, 0, 0)) *
-		glm::rotate(glm::mat4(1.0f), cameraAngleX, glm::vec3(0, 1, 0))), glm::vec3(0, 0, -3.5f));
+		glm::rotate(glm::mat4(1.0f), cameraAngleX, glm::vec3(0, 1, 0))), glm::vec3(0, 2, -3.5f));
 }
 
 Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex ray generation
@@ -30,8 +31,8 @@ Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex r
 	glm::vec3 near = glm::unProject(glm::vec3(x, y, -1), view, proj, vp); // make function mine rather than using glm::unproject
 	glm::vec3 far = glm::unProject(glm::vec3(x, y, 1), view, proj, vp);
 
-	ray.Direction = glm::normalize(far - near);
-	ray.Origin = near;
+	ray.direction = glm::normalize(far - near);
+	ray.origin = near;
 	
 	return ray;
 }

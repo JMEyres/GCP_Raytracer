@@ -5,8 +5,8 @@
 class Ray
 {
 public:
-	glm::vec3 Origin;
-	glm::vec3 Direction;
+	glm::vec3 origin;
+	glm::vec3 direction;
 
 private:
 

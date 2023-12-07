@@ -44,6 +44,10 @@ public:
 	// Will return when user closes the window
 	// SDL is uninitialised, you are expected to exit the program
 	void ShowAndHold();
+	
+	
+	// custom show and hold to allow for cam movement
+	void Render(Camera& camera);
 
 protected:
 
