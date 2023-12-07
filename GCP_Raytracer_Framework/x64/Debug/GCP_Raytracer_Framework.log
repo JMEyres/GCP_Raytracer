@@ -1,6 +1,3 @@
 ﻿  Main.cpp
 C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\Main.cpp(24,12): warning C4101: 'incomingEvent': unreferenced local variable
-  RayTracer.cpp
-  Generating Code...
-C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(101): warning C4715: 'RayTracer::TraceRay': not all control paths return a value
   GCP_Raytracer_Framework.vcxproj -> C:\Users\joshu\Documents\Github\GCP_Raytracer\x64\Debug\GCP_Raytracer_Framework.exe
