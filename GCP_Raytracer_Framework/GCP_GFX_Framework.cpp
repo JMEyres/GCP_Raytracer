@@ -495,19 +495,16 @@ void GCP_Framework::ShowAndHold()
 					// https://wiki.libsdl.org/SDL_Event
 					// and also: https://wiki.libsdl.org/SDL_EventType
 				}
+				// Limiter to slow us down
+				SDL_Delay((unsigned int)((1.0f / 50.0f) * 1000.0f));
 			}
-
-			// Limiter to slow us down
-			SDL_Delay((unsigned int)((1.0f / 50.0f) * 1000.0f));
 		}
 
+			// Cleanup
 
-	// Cleanup
-
-		SDL_GL_DeleteContext(_SDLglcontext);
-		SDL_DestroyWindow(_SDLwindow);
-		SDL_Quit();
-
+			SDL_GL_DeleteContext(_SDLglcontext);
+			SDL_DestroyWindow(_SDLwindow);
+			SDL_Quit();
 }
 
 GCP_Framework::~GCP_Framework()

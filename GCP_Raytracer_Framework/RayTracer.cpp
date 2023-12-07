@@ -8,6 +8,7 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 	// essentially need to split this up into multiple rows and have a thread per row so would have window x the same and then window y/num threads to give each block
 	// then would would loop through all pixels in window x by block y
 
+	// loop through every pixel on the screen
 	for (int i = 0; i < camera.viewport.width; i++)
 	{
 		for (int j = 0; j < camera.viewport.height; j++)

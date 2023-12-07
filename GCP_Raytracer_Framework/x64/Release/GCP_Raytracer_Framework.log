@@ -1,0 +1,15 @@
+﻿  Camera.cpp
+  GCP_GFX_Framework.cpp
+  Main.cpp
+C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\Main.cpp(24,12): warning C4101: 'incomingEvent': unreferenced local variable
+  Ray.cpp
+  RayTracer.cpp
+  Sphere.cpp
+  Utils.cpp
+  glew.c
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+C:\Users\joshu\Documents\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(102): warning C4715: 'RayTracer::TraceRay': not all control paths return a value
+  All 736 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  GCP_Raytracer_Framework.vcxproj -> C:\Users\joshu\Documents\Github\GCP_Raytracer\x64\Release\GCP_Raytracer_Framework.exe

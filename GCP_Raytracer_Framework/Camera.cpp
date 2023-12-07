@@ -2,15 +2,22 @@
 
 void Camera::setupCamera(glm::ivec2 windowSize)
 {
+	//cameraAngleX = 0.0f, cameraAngleY = 0.0f;
+
 	viewport.width = (float)windowSize.x;
 	viewport.height = (float)windowSize.y;
 	viewport.near = 0.1f;
 	viewport.far = 1000.0f;
 	
 	proj = glm::perspective(glm::radians(45.0f), viewport.width/viewport.height, viewport.near, viewport.far);
-	view = glm::mat4(1.0f);
+	view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -3.5f));;
 	model = glm::mat4(1.0f);
+}
 
+void Camera::updateCamera()
+{
+	view = glm::translate((glm::rotate(glm::mat4(1.0f), cameraAngleY, glm::vec3(1, 0, 0)) *
+		glm::rotate(glm::mat4(1.0f), cameraAngleX, glm::vec3(0, 1, 0))), glm::vec3(0, 0, -3.5f));
 }
 
 Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex ray generation
