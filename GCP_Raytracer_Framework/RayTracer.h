@@ -22,7 +22,7 @@ public:
 	std::vector<Sphere> objectList;
 
 	void Render(Camera& camera, GCP_Framework& framework);
-	void CreateSphere(glm::vec3 _pos, float _radius, glm::vec3 _color, float emissionStrength);
+	void CreateSphere(glm::vec3 _pos, float _radius, glm::vec3 _color);
 
 	glm::vec4 PerPixel(int x, int y);
 	

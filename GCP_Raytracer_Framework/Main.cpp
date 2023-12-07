@@ -47,20 +47,13 @@ int main(int argc, char* argv[]) // Render function
 	_camera.view = glm::translate((glm::rotate(glm::mat4(1.0f), _camera.cameraAngleY, glm::vec3(1, 0, 0)) * glm::rotate(glm::mat4(1.0f), _camera.cameraAngleX, glm::vec3(0, 1, 0))), glm::vec3(0, 0, -3.5f));*/
 	_myFramework.SetAllPixels(glm::vec3(0));
 
-	_rayTracer.CreateSphere(glm::vec3(1.0f, 1.0f, -10.0f), 1.0f, glm::vec3(1.0f, 0.0f, 0.0f), 0);
-	_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f, glm::vec3(0.0f, 1.0f, 0.0f),2.0f);
-
-	_rayTracer.Render(_camera, _myFramework);
+	_rayTracer.CreateSphere(glm::vec3(-3.0f, 0.0f, -10.0f), 1.0f, glm::vec3(1.0f, 0.0f, 0.0f)); // Position, Radius and color of sphere
+	_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -10.0f), 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	std::chrono::steady_clock::time_point time1 =
 		std::chrono::high_resolution_clock::now();
-
 	
-
-	// essentially need to split this up into multiple rows and have a thread per row so would have window x the same and then window y/num threads to give each block
-	// then would would loop through all pixels in window x by block y
-
-	
+	_rayTracer.Render(_camera, _myFramework);
 
 	std::chrono::steady_clock::time_point time2 =
 		std::chrono::high_resolution_clock::now();
