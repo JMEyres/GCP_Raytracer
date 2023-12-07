@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	_rayTracer.CreateSphere(glm::vec3(-1.5f, 0.0f, -5.0f), 1.0f, 2); // Position, Radius and color of sphere respectively
 	_rayTracer.CreateSphere(glm::vec3(1.5f, 0.0f, -5.0f), 1.0f, 3);
 	//_rayTracer.CreateSphere(glm::vec3(0.0f, 2.0f, -5.0f), 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 0.0f);
-	_rayTracer.CreateSphere(glm::vec3(0.0f, 0.5f, -3.0f), 1.0f, 0);
+	_rayTracer.CreateSphere(glm::vec3(5.0f, 3.0f, -10.0f), 5.0f, 0);
 	_rayTracer.CreateSphere(glm::vec3(0.0f, 102.0f, -5.0f), 100.0f, 1);
 	//_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -5.0f), 1.0f, glm::vec3(1, 1, 1), 0.0f, 0.0f);
 

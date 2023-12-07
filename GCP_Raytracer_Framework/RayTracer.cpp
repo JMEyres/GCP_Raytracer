@@ -145,12 +145,11 @@ RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
 			hitDistance = closestT;
 			closestSphere = (int)i;
 		}
-
+	}
 		if (closestSphere < 0) // if nothing hit ray has missed
 			return Miss(ray);
 
 		return ClosestHit(ray, hitDistance, closestSphere);
-	}	
 }
 
 RayTracer::HitInfo RayTracer::ClosestHit(const Ray& ray, float hitDistance, int objectIndex) // define what is the closest object to be hit
