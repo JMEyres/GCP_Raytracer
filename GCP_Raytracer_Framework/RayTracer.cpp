@@ -8,7 +8,28 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 	// essentially need to split this up into multiple rows and have a thread per row so would have window x the same and then window y/num threads to give each block
 	// then would would loop through all pixels in window x by block y
 
+	//std::thread::hardware_concurrency(); // tells you how many cores are available
+	
 	// loop through every pixel on the screen
+
+#define MT 1
+#if MT 1 // This method just uses all avaliable cores
+	std::for_each(std::execution::par, camera.hIterator.begin(), camera.hIterator.end(), [&](int y)
+		{
+			std::for_each(std::execution::par, camera.wIterator.begin(), camera.wIterator.end(), [&, y](int x)
+				{
+					glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
+					glm::vec4 pixelColour = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
+					framework.DrawPixel(pixelPosition, pixelColour); // draw the pixel
+				});
+		});
+//#elseif MT 2
+	//	int numThreads = 2;
+	//for (int i = 0; i < numThreads; i++)
+	//{
+
+	//}
+#else
 	for (int i = 0; i < camera.viewport.width; i++)
 	{
 		for (int j = 0; j < camera.viewport.height; j++)
@@ -18,6 +39,8 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 			framework.DrawPixel(pixelPosition, pixelColour); // draw the pixel
 		}
 	}
+#endif
+
 }
 
 void RayTracer::CreateSphere(glm::vec3 pos, float radius, glm::vec3 color, float roughness, float metalness)
@@ -48,7 +71,8 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 
 		if (hitInfo.hitDistance < 0) // if ray hits nothing
 		{
-			glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f);
+			//glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f);
+			glm::vec3 skyColor = glm::vec3(0);
 			color += skyColor * multiplier;
 			break;
 		}

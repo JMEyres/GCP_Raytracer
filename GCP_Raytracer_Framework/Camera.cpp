@@ -2,13 +2,20 @@
 
 void Camera::setupCamera(glm::ivec2 windowSize)
 {
-	//cameraAngleX = 0.0f, cameraAngleY = 0.0f;
 
 	viewport.width = (float)windowSize.x;
 	viewport.height = (float)windowSize.y;
 	viewport.near = 0.1f;
 	viewport.far = 1000.0f;
 	
+	wIterator.resize(viewport.width);
+	hIterator.resize(viewport.height);
+
+	for (int i = 0; i < viewport.width; i++)
+		wIterator[i] = i;
+	for (int i = 0; i < viewport.height; i++)
+		hIterator[i] = i;
+
 	proj = glm::perspective(glm::radians(45.0f), viewport.width/viewport.height, viewport.near, viewport.far);
 	view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -3.5f));;
 	model = glm::mat4(1.0f);

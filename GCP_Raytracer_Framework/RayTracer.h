@@ -6,6 +6,8 @@
 #include "Ray.h"
 #include "Camera.h"
 #include "Utils.h"
+#include <algorithm>
+#include <execution>
 
 class GCP_Framework;
 class RayTracer

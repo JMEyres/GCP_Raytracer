@@ -29,8 +29,10 @@ int main(int argc, char* argv[])
 
 	_rayTracer.CreateSphere(glm::vec3(-1.5f, 0.0f, -5.0f), 1.0f, glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 0.0f); // Position, Radius and color of sphere respectively
 	_rayTracer.CreateSphere(glm::vec3(1.5f, 0.0f, -5.0f), 1.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.1f, 0.0f);
-	_rayTracer.CreateSphere(glm::vec3(0.0f, 2.0f, -5.0f), 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 0.0f);
+	//_rayTracer.CreateSphere(glm::vec3(0.0f, 2.0f, -5.0f), 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 0.0f);
 	_rayTracer.CreateSphere(glm::vec3(0.0f, -2.0f, -5.0f), 1.0f, glm::vec3(0.975f, 0.382f, 0.0f), 0.0f, 0.0f);
+	_rayTracer.CreateSphere(glm::vec3(0.0f, 102.0f, -5.0f), 100.0f, glm::vec3(1, 1, 1), 0.0f, 0.0f);
+	//_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -5.0f), 1.0f, glm::vec3(1, 1, 1), 0.0f, 0.0f);
 
 	std::chrono::steady_clock::time_point time1 =
 		std::chrono::high_resolution_clock::now(); // Take the time before the render

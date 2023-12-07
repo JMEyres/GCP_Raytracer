@@ -3,6 +3,7 @@
 #include <GLM/glm.hpp>
 #include <GLM/ext.hpp>
 #include "Ray.h"
+#include <vector>
 
 class Camera
 {
@@ -17,6 +18,9 @@ class Camera
 public:
 	glm::mat4 proj, view, model;
 	Viewport viewport;
+
+	std::vector<int> wIterator;
+	std::vector<int> hIterator;
 
 	//Ray GetRay(glm::ivec2 windowPos); // Old ray generation
 	void setupCamera(glm::ivec2 windowSize);
