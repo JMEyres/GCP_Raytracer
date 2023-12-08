@@ -21,7 +21,6 @@ int main(int argc, char* argv[])
 	// init raytracer stuff
 	RayTracer _rayTracer;
 	Camera _camera;
-	SDL_Event incomingEvent;
 
 	_camera.setupCamera(winSize); // if i want to make the camera move i need to do it directly in the show and hold function in the framework
 
@@ -29,12 +28,11 @@ int main(int argc, char* argv[])
 
 	_rayTracer.CreateMats(); // 0:orange, 1: blue, 2: red, 3:green, 4:white
 
-	_rayTracer.CreateSphere(glm::vec3(-1.5f, 0.0f, -5.0f), 1.0f, 2); // Position, Radius and color of sphere respectively
+	_rayTracer.CreateSphere(glm::vec3(-1.5f, 0.0f, -5.0f), 1.0f, 2); // Position, Radius and material of sphere respectively
 	_rayTracer.CreateSphere(glm::vec3(1.5f, 0.0f, -5.0f), 1.0f, 3);
-	//_rayTracer.CreateSphere(glm::vec3(0.0f, 2.0f, -5.0f), 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), 0.5f, 0.0f);
-	_rayTracer.CreateSphere(glm::vec3(5.0f, 3.0f, -10.0f), 5.0f, 0);
+	//_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 3);
+	_rayTracer.CreateSphere(glm::vec3(5.0f, -4.0f, -10.0f), 5.0f, 0);
 	_rayTracer.CreateSphere(glm::vec3(0.0f, 102.0f, -5.0f), 100.0f, 1);
-	//_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, -5.0f), 1.0f, glm::vec3(1, 1, 1), 0.0f, 0.0f);
 
 	std::chrono::steady_clock::time_point time1 =
 		std::chrono::high_resolution_clock::now(); // Take the time before the render

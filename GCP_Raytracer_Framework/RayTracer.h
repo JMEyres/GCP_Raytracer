@@ -24,6 +24,8 @@ public:
 	std::vector<Sphere> objectList;
 	std::vector<Material> materialList;
 
+	std::vector<std::vector<glm::vec4>> passVector;
+
 	void Render(Camera& camera, GCP_Framework& framework);
 	void CreateSphere(glm::vec3 _pos, float _radius, int matIndex);
 	void CreateMats();
@@ -35,4 +37,5 @@ public:
 	HitInfo Miss(const Ray& ray);
 private:
 	Camera* activeCamera = nullptr;
+	std::vector<glm::vec4> buffer;
 };

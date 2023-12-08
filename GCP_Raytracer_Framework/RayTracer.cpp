@@ -4,7 +4,16 @@
 void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 {
 	activeCamera = &camera;
+	int passes = 10;
+	buffer.resize(camera.viewport.width * camera.viewport.height);
 
+	//for (int i = 0; i < passVector.size(); i++)
+	//{
+	//	passVector[i].resize();
+	//}
+
+	//memset(, 0, camera.viewport.width * camera.viewport.height * sizeof(glm::vec4));
+	//pixelColors.resize(camera.viewport.width * camera.viewport.height);
 	// essentially need to split this up into multiple rows and have a thread per row so would have window x the same and then window y/num threads to give each block
 	// then would would loop through all pixels in window x by block y
 
@@ -18,9 +27,16 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 		{
 			std::for_each(std::execution::par, camera.wIterator.begin(), camera.wIterator.end(), [&, y](int x)
 				{
-					glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
-					glm::vec4 pixelColour = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
-					framework.DrawPixel(pixelPosition, pixelColour); // draw the pixel
+					for (int p = 0; p < passes; p++)
+					{
+						glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
+						glm::vec4 pixelColor = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
+						float y = pixelPosition.y;
+						float x = pixelPosition.x;
+						buffer[(float)(y * camera.viewport.width + x)] += pixelColor;
+						glm::vec4 bufferPixelColor = buffer[(float)(y * camera.viewport.width + x)];
+						framework.DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
+					}
 				});
 		});
 //#elseif MT 2
@@ -34,9 +50,18 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 	{
 		for (int j = 0; j < camera.viewport.height; j++)
 		{
-			glm::ivec2 pixelPosition = { i, j }; // get the current pixel position
-			glm::vec4 pixelColour = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
-			framework.DrawPixel(pixelPosition, pixelColour); // draw the pixel
+			for (int p = 0; p < passes; p++)
+			{
+				glm::ivec2 pixelPosition = { i, j }; // get the current pixel position
+				glm::vec4 pixelColor = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
+				float y = pixelPosition.y;
+				float x = pixelPosition.x;
+				buffer[(float)(y * camera.viewport.width + x)] += pixelColor;
+				glm::vec4 bufferPixelColor = buffer[(float)(y * camera.viewport.width + x)];
+				//glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
+				bufferPixelColor = glm::clamp(bufferPixelColor, glm::vec4(0), glm::vec4(1));
+				framework.DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
+			}
 		}
 	}
 #endif
@@ -65,12 +90,12 @@ void RayTracer::CreateMats()
 
 	Material blueSphere;
 	blueSphere.albedo = glm::vec3(0, 0, 1);
-	blueSphere.roughness = 0.1f;
+	blueSphere.roughness = 1.0f;
 	materialList.push_back(blueSphere);
 
 	Material redSphere;
 	redSphere.albedo = glm::vec3(1, 0, 0);
-	redSphere.roughness = 0.1f;
+	redSphere.roughness = 0.0f;
 	materialList.push_back(redSphere);
 
 	Material greenSphere;
@@ -87,36 +112,66 @@ void RayTracer::CreateMats()
 glm::vec4 RayTracer::PerPixel(int x, int y)
 {
 	Ray ray = activeCamera->castRay(x, y, activeCamera->proj, activeCamera->view); // complex ray generation per pixel on screen
+	Ray shadowRay;
 
-	glm::vec3 light(0.0f); // initialise color
-	glm::vec3 throughput = glm::vec3(1.0f); // have multiplier so it isnt just full color forever
+	// for emissive materials
+	glm::vec3 light(0.0f); 
+	glm::vec3 throughput = glm::vec3(1.0f);
 
-
+	// for standard lighting with fixed light
+	glm::vec3 color(0.0f);
+	float multiplier = 1.0f;
 	int bounces = 5;
+
 	for (int i = 0; i < bounces; ++i)
 	{
 		// actual intersection check returning hit distance, position, normal and the object index of what is hit
 		RayTracer::HitInfo hitInfo = TraceRay(ray);
 
-		if (hitInfo.hitDistance < 0) // if ray hits nothing
+		if (hitInfo.hitDistance < 0.0f) // if ray hits nothing
 		{
 			glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f); // spheres appear to reflect the sky giving them a strange tint
-			//light += skyColor * throughput;
+			//glm::vec3 skyColor = glm::vec3(0); // spheres appear to reflect the sky giving them a strange tint
+			color += skyColor * multiplier;
 			break;
 		}
 
-		Sphere& sphere = RayTracer::objectList[hitInfo.objectIndex]; // set sphere to object that was hit
+		Sphere& sphere = objectList[hitInfo.objectIndex]; // set sphere to object that was hit
 
+		glm::vec3 lightDir = glm::normalize(glm::vec3(0,10,0)); // light direction not position, so from the sphere rather than to it
+		float lightIntensity = glm::max(glm::dot(hitInfo.hitNormal, -lightDir), 0.0f);
+
+		glm::vec3 sphereColor = materialList[sphere.matIndex].albedo;
+		sphereColor *= lightIntensity;
+		color += sphereColor * multiplier;
+
+		multiplier *= 0.05f;
+		
 		throughput *= materialList[sphere.matIndex].albedo;
-		light += materialList[sphere.matIndex].GetEmission(); 
+		light += materialList[sphere.matIndex].GetEmission();
 
 		ray.origin = hitInfo.hitPos + hitInfo.hitNormal * 0.0001f; // have to add a small offset so that the new ray isnt inside the sphere
-		//ray.direction = glm::reflect(hitInfo.hitPos, hitInfo.hitNormal + materialList[sphere.matIndex].roughness * Utils::RandomVector()); // reflect the ray incoming 
-		ray.direction = glm::normalize(hitInfo.hitNormal + Utils::InUnitSphere());
-		// introduced roughness this could be improved with path tracing and accumulating images so they improve over time
+		shadowRay.origin = hitInfo.hitPos + hitInfo.hitNormal * 0.0001f;
+		shadowRay.direction = -lightDir;
+		HitInfo shadowHitInfo = TraceRay(shadowRay);
+		if (shadowHitInfo.hitDistance > 0.0f)
+		{
+			//std::cout << "SHADE " << std::endl;
+			color = glm::vec3(0.0f);
+		}
+#define E
+#ifdef EM 
+		ray.direction = glm::normalize(hitInfo.hitNormal + Utils::InUnitSphere()); // use emissive lights
 	}
-
 	return glm::vec4(light, 1.0f); // return color with an alpha of 1
+
+#else
+		ray.direction = glm::reflect(hitInfo.hitPos, hitInfo.hitNormal + materialList[sphere.matIndex].roughness * Utils::InUnitSphere()); // reflect the ray incoming 
+		
+	}
+	return glm::vec4(color, 1.0f); // return color with an alpha of 1
+
+#endif // EM 0
 }
 
 RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
@@ -129,7 +184,7 @@ RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
 	{
 		Sphere sphere = RayTracer::objectList[i]; // set sphere to current object
 
-		// intersection check using quadratic formula
+		// intersection check using quadratic formula is cleaner than the other method and works properly to find out the closest sphere
 		glm::vec3 origin = ray.origin - sphere.position;
 		float a = glm::dot(ray.direction, ray.direction);
 		float b = 2.0f * glm::dot(origin, ray.direction);
@@ -175,6 +230,7 @@ RayTracer::HitInfo RayTracer::Miss(const Ray& ray)
 	return hitinfo;
 };
 
+// Old, less clean intersection check
 /*float d = glm::length(Position - _ray.Origin - (glm::dot((Position - _ray.Origin), _ray.Direction)) * _ray.Direction);
 	float x = glm::sqrt((Radius * Radius) - (d * d));
 	glm::vec3 closestIntersect = _ray.Origin + ((glm::dot((Position - _ray.Origin), _ray.Direction) - x) * _ray.Direction);
