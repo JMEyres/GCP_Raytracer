@@ -4,7 +4,8 @@
 void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 {
 	activeCamera = &camera;
-	int passes = 10;
+	myFramework = &framework;
+
 	buffer.resize(camera.viewport.width * camera.viewport.height);
 
 	//for (int i = 0; i < passVector.size(); i++)
@@ -21,8 +22,8 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 	
 	// loop through every pixel on the screen
 
-#define MT 1
-#if MT 1 // This method just uses all avaliable cores
+//#define MT 1
+#ifdef MT 1 // This method just uses all avaliable cores
 	std::for_each(std::execution::par, camera.hIterator.begin(), camera.hIterator.end(), [&](int y)
 		{
 			std::for_each(std::execution::par, camera.wIterator.begin(), camera.wIterator.end(), [&, y](int x)
@@ -39,31 +40,39 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 					}
 				});
 		});
-//#elseif MT 2
-	//	int numThreads = 2;
+#else
+	//int numThreads = 2;
+	//std::mutex mtx;
+	//CreateChunks(numThreads, glm::vec2(camera.viewport.width, camera.viewport.height));
 	//for (int i = 0; i < numThreads; i++)
 	//{
-
+	//	//ParallelRayTrace, 
+	//	std::thread thread([&, this] {this->ParallelRayTrace(i, numThreads, mtx); });
+	//	thread.join();
 	//}
-#else
-	for (int i = 0; i < camera.viewport.width; i++)
-	{
-		for (int j = 0; j < camera.viewport.height; j++)
-		{
-			for (int p = 0; p < passes; p++)
-			{
-				glm::ivec2 pixelPosition = { i, j }; // get the current pixel position
-				glm::vec4 pixelColor = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
-				float y = pixelPosition.y;
-				float x = pixelPosition.x;
-				buffer[(float)(y * camera.viewport.width + x)] += pixelColor;
-				glm::vec4 bufferPixelColor = buffer[(float)(y * camera.viewport.width + x)];
-				//glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
-				bufferPixelColor = glm::clamp(bufferPixelColor, glm::vec4(0), glm::vec4(1));
-				framework.DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
-			}
-		}
-	}
+	// 
+	// 
+	glm::vec2 winsize = glm::vec2(camera.viewport.width, camera.viewport.height);
+	CreateThreads(8, winsize);
+	
+	//for (int i = 0; i < camera.viewport.width; i++)
+	//{
+	//	for (int j = 0; j < camera.viewport.height; j++)
+	//	{
+	//		for (int p = 0; p < passes; p++)
+	//		{
+	//			glm::ivec2 pixelPosition = { i, j }; // get the current pixel position
+	//			glm::vec4 pixelColor = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
+	//			float y = pixelPosition.y;
+	//			float x = pixelPosition.x;
+	//			buffer[(float)(y * camera.viewport.width + x)] += pixelColor;
+	//			glm::vec4 bufferPixelColor = buffer[(float)(y * camera.viewport.width + x)];
+	//			//glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
+	//			bufferPixelColor = glm::clamp(bufferPixelColor, glm::vec4(0), glm::vec4(1));
+	//			framework.DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
+	//		}
+	//	}
+	//}
 #endif
 
 }
@@ -244,3 +253,54 @@ RayTracer::HitInfo RayTracer::Miss(const Ray& ray)
 		return Sphere::HitInfo{ false, glm::vec3(0.0,0.0,0.0) };
 
 	return Sphere::HitInfo{ true, closestIntersect };*/
+
+
+void RayTracer::ParallelRayTrace(Chunk chunk)
+{
+	std::cout << "chunk: " << " colSize: " << chunk.colSize << " rowStart: " << chunk.rowStart << " rowEnd: " << chunk.rowEnd << std::endl;
+	std::vector<glm::vec4> parallelBuffer;
+	
+	for (int i = 0; i < chunk.colSize; i++) // chunk starting x pos should always be 0
+	{
+		for (int j = chunk.rowStart; j < chunk.rowEnd; j++) // chunk starting y pos should iterate up
+		{
+			for (int p = 0; p < passes; p++)
+			{
+				glm::ivec2 pixelPosition = { i, j }; // get the current pixel position
+				glm::vec4 pixelColor = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
+				float y = pixelPosition.y;
+				float x = pixelPosition.x;
+				buffer[(float)(y * chunk.colSize + x)] += pixelColor;
+				glm::vec4 bufferPixelColor = buffer[(float)(y * chunk.colSize + x)];
+				//glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
+				bufferPixelColor = glm::clamp(bufferPixelColor, glm::vec4(0), glm::vec4(1));
+				myFramework->DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
+			}
+		}
+	}
+}
+
+void RayTracer::CreateThreads(int numThreads, glm::ivec2 winSize)
+{
+	std::mutex mtx;
+	int rowsPerThread = winSize.y / numThreads;
+
+	for (int i = 0; i < numThreads; i++)
+	{
+		Chunk chunk;
+		chunk.colSize = winSize.x;
+		chunk.rowStart = i * rowsPerThread;
+		chunk.rowEnd = chunk.rowStart + rowsPerThread;
+		std::cout << "chunk: " << i << " colSize: " << chunk.colSize << " rowStart: " << chunk.rowStart << " rowEnd: " << chunk.rowEnd << std::endl;
+		//chunks.push_back(chunk);
+		//mtx.lock();
+		std::thread chunkThread([chunk, this] { this->ParallelRayTrace(chunk); });
+		threads.push_back(std::move(chunkThread));
+		//mtx.unlock()
+	}
+	std::cout << threads.size() << std::endl;
+	for (std::thread& t : threads)
+	{
+		t.join();
+	}
+}
