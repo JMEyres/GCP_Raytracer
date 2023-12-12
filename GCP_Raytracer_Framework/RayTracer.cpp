@@ -41,18 +41,8 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 				});
 		});
 #else
-	//int numThreads = 2;
-	//std::mutex mtx;
-	//CreateChunks(numThreads, glm::vec2(camera.viewport.width, camera.viewport.height));
-	//for (int i = 0; i < numThreads; i++)
-	//{
-	//	//ParallelRayTrace, 
-	//	std::thread thread([&, this] {this->ParallelRayTrace(i, numThreads, mtx); });
-	//	thread.join();
-	//}
-	// 
-	// 
 	glm::vec2 winsize = glm::vec2(camera.viewport.width, camera.viewport.height);
+	//std::thread::hardware_concurrency()
 	CreateThreads(8, winsize);
 	
 	//for (int i = 0; i < camera.viewport.width; i++)
@@ -168,7 +158,7 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 			//std::cout << "SHADE " << std::endl;
 			color = glm::vec3(0.0f);
 		}
-#define E
+#define EM
 #ifdef EM 
 		ray.direction = glm::normalize(hitInfo.hitNormal + Utils::InUnitSphere()); // use emissive lights
 	}
@@ -257,7 +247,7 @@ RayTracer::HitInfo RayTracer::Miss(const Ray& ray)
 
 void RayTracer::ParallelRayTrace(Chunk chunk)
 {
-	std::cout << "chunk: " << " colSize: " << chunk.colSize << " rowStart: " << chunk.rowStart << " rowEnd: " << chunk.rowEnd << std::endl;
+	//std::cout << "chunk: " << " colSize: " << chunk.colSize << " rowStart: " << chunk.rowStart << " rowEnd: " << chunk.rowEnd << std::endl;
 	std::vector<glm::vec4> parallelBuffer;
 	
 	for (int i = 0; i < chunk.colSize; i++) // chunk starting x pos should always be 0

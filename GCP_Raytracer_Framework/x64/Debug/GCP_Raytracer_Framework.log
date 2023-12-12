@@ -1,16 +1,16 @@
 ﻿  RayTracer.cpp
 C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(9,38): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
 C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(26,1): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(271,13): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(271,13): warning C4244:         with
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(271,13): warning C4244:         [
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(271,13): warning C4244:             T=int
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(271,13): warning C4244:         ]
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(272,13): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(272,13): warning C4244:         with
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(272,13): warning C4244:         [
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(272,13): warning C4244:             T=int
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(272,13): warning C4244:         ]
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(273,38): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
-C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(274,67): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(260,13): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(260,13): warning C4244:         with
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(260,13): warning C4244:         [
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(260,13): warning C4244:             T=int
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(260,13): warning C4244:         ]
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(261,13): warning C4244: 'initializing': conversion from 'T' to 'float', possible loss of data
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(261,13): warning C4244:         with
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(261,13): warning C4244:         [
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(261,13): warning C4244:             T=int
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(261,13): warning C4244:         ]
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(262,38): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
+C:\Users\joshu\Github\GCP_Raytracer\GCP_Raytracer_Framework\RayTracer.cpp(263,67): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
   GCP_Raytracer_Framework.vcxproj -> C:\Users\joshu\Github\GCP_Raytracer\x64\Debug\GCP_Raytracer_Framework.exe
