@@ -4,7 +4,7 @@
 /// Define the parameters of the camera here
 /// </summary>
 /// <param name="windowSize"></param>
-void Camera::setupCamera(glm::ivec2 windowSize)
+void Camera::SetupCamera(glm::ivec2 windowSize)
 {
 
 	viewport.width = (float)windowSize.x;
@@ -25,15 +25,15 @@ void Camera::setupCamera(glm::ivec2 windowSize)
 /// <param name="proj"></param>
 /// <param name="view"></param>
 /// <returns> The ray generated </returns>
-Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex ray generation
+Ray Camera::CastRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex ray generation
 {
 	Ray ray;
 
 	glm::vec4 vp = glm::vec4(0, 0, viewport.width, viewport.height);
 	y = (int)vp.w - y;
 
-	glm::vec3 near = convertToNDC(glm::vec3(x, y, -1), view, proj, vp);
-	glm::vec3 far = convertToNDC(glm::vec3(x, y, 1), view, proj, vp);
+	glm::vec3 near = ConvertToNDC(glm::vec3(x, y, -1), view, proj, vp);
+	glm::vec3 far = ConvertToNDC(glm::vec3(x, y, 1), view, proj, vp);
 
 	ray.direction = glm::normalize(far - near);
 	ray.origin = near;
@@ -49,7 +49,7 @@ Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex r
 /// <param name="proj"></param>
 /// <param name="viewport"></param>
 /// <returns> Normalised device coordinates of inputted pixels </returns>
-glm::vec3 const Camera::convertToNDC(glm::vec3 const coords, glm::mat4 const view, glm::mat4 const proj, glm::vec4 const viewport)
+glm::vec3 const Camera::ConvertToNDC(glm::vec3 const coords, glm::mat4 const view, glm::mat4 const proj, glm::vec4 const viewport)
 {
 	glm::mat4 inverse = glm::inverse(proj * view);
 	glm::vec4 tmp = glm::vec4(coords,1.0f);

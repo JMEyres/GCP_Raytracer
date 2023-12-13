@@ -38,7 +38,7 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework, int numThreads)
 void RayTracer::CreateSphere(glm::vec3 pos, float radius, int matIndex)
 {
 	Sphere sphere;
-	sphere.position = pos;;
+	sphere.position = pos;
 	sphere.radius = radius;
 	sphere.matIndex = matIndex;
 	objectList.push_back(sphere);
@@ -86,7 +86,7 @@ void RayTracer::CreateMats()
 /// <returns> The color or light level depending on the mode </returns>
 glm::vec4 RayTracer::PerPixel(int x, int y)
 {
-	Ray ray = activeCamera->castRay(x, y, activeCamera->proj, activeCamera->view); // complex ray generation per pixel on screen
+	Ray ray = activeCamera->CastRay(x, y, activeCamera->proj, activeCamera->view); // complex ray generation per pixel on screen
 	Ray shadowRay;
 
 	// for emissive materials

@@ -35,7 +35,7 @@ public:
 	std::vector<Material> materialList;
 
 	void Render(Camera& camera, GCP_Framework& framework, int numThreads);
-	void CreateSphere(glm::vec3 _pos, float _radius, int matIndex);
+	void CreateSphere(glm::vec3 pos, float radius, int matIndex);
 	void CreateMats();
 
 	glm::vec4 PerPixel(int x, int y);
@@ -48,9 +48,9 @@ public:
 	int threadCount = 0;
 	std::vector<Chunk> chunks;
 	std::vector<std::thread> threads;
-	const static int passes = 5;
 	void CreateThreads(int numThreads, glm::ivec2 winSize);
 
+	const static int passes = 5;
 
 	std::vector<std::vector<std::string>> totalPassTimes;
 private:
