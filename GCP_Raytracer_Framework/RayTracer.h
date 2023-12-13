@@ -10,6 +10,7 @@
 #include <execution>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 class GCP_Framework;
 class RayTracer
@@ -33,8 +34,6 @@ public:
 	std::vector<Sphere> objectList;
 	std::vector<Material> materialList;
 
-	std::vector<std::vector<glm::vec4>> passVector;
-
 	void Render(Camera& camera, GCP_Framework& framework);
 	void CreateSphere(glm::vec3 _pos, float _radius, int matIndex);
 	void CreateMats();
@@ -48,8 +47,10 @@ public:
 	void ParallelRayTrace(Chunk chunk);
 	std::vector<Chunk> chunks;
 	std::vector<std::thread> threads;
-	int passes = 10;
+	const static int passes = 5;
 	void CreateThreads(int numThreads, glm::ivec2 winSize);
+
+	std::vector<std::vector<std::string>> totalPassTimes;
 private:
 	Camera* activeCamera = nullptr;
 	GCP_Framework* myFramework = nullptr;

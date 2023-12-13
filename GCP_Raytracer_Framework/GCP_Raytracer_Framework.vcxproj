@@ -156,10 +156,7 @@
     <ClCompile Include="GCP_GFX_Framework.cpp" />
     <ClCompile Include="glew.c" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RayTracer.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="FragShader.txt" />

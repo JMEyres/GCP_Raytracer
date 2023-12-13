@@ -7,7 +7,10 @@ int main(int argc, char* argv[])
 	// Set window size
 	glm::ivec2 winSize(640, 480);
 
-	int numThreads = 2;
+	std::ofstream fs;
+	fs.open("../perfomance.txt");
+	fs << "";
+	fs.close();
 
 	// This will handle rendering to screen
 	GCP_Framework _myFramework;
@@ -30,7 +33,6 @@ int main(int argc, char* argv[])
 
 	_rayTracer.CreateSphere(glm::vec3(-1.5f, 0.0f, -5.0f), 1.0f, 2); // Position, Radius and material of sphere respectively
 	_rayTracer.CreateSphere(glm::vec3(1.5f, 0.0f, -5.0f), 1.0f, 3);
-	//_rayTracer.CreateSphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 3);
 	_rayTracer.CreateSphere(glm::vec3(5.0f, -4.0f, -10.0f), 5.0f, 0);
 	_rayTracer.CreateSphere(glm::vec3(0.0f, 102.0f, -5.0f), 100.0f, 1);
 
@@ -39,18 +41,6 @@ int main(int argc, char* argv[])
 
 	_rayTracer.Render(_camera, _myFramework); // do the actual ray tracing
 
-	/* 
-	multithreading this wouldnt have a huge effect because it is currently just rendered once and thats it,
-	so the impact of creating the threads may in fact just slow it down, however i should multithread it, take the performance, 
-	then make it update in real time with moving the camera and then see the difference there.
-
-	Would then allow me to compare 
-	single threaded static performance
-	multi threaded static performance
-	single threaded real time performance
-	multi threaded real time performance
-	*/
-
 	std::chrono::steady_clock::time_point time2 =
 		std::chrono::high_resolution_clock::now(); // take the time after the render
 
@@ -58,11 +48,9 @@ int main(int argc, char* argv[])
 		std::chrono::duration_cast<std::chrono::milliseconds> (time2 - time1); // find the difference and you have how long it took to render
 
 	// write performance to file
-	std::ofstream fs;
-	fs.open("../perfomance.txt");
-
-	fs << "Time taken: " << milliseconds.count() << "\n";
-
+	//std::ofstream fs;
+	fs.open("../perfomance.txt", std::ofstream::app);
+	fs << "Total time taken to render: " << milliseconds.count() << "\n";
 	fs.close();
 
 	// Pushes the framebuffer to OpenGL and renders to screen

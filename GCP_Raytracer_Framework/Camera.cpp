@@ -7,14 +7,6 @@ void Camera::setupCamera(glm::ivec2 windowSize)
 	viewport.height = (float)windowSize.y;
 	viewport.near = 0.1f;
 	viewport.far = 1000.0f;
-	
-	wIterator.resize(viewport.width);
-	hIterator.resize(viewport.height);
-
-	for (int i = 0; i < viewport.width; i++)
-		wIterator[i] = i;
-	for (int i = 0; i < viewport.height; i++)
-		hIterator[i] = i;
 
 	proj = glm::perspective(glm::radians(45.0f), viewport.width/viewport.height, viewport.near, viewport.far);
 	view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -3.5f));;
@@ -49,13 +41,3 @@ glm::vec3 const Camera::convertToNDC(glm::vec3 const coords, glm::mat4 const vie
 	obj /= obj.w;
 	return glm::vec3(obj);
 }
-
-/*Ray Camera::GetRay(glm::ivec2 windowPos)
-{
-	Ray _ray;
-
-	_ray.Origin = glm::vec3((float)windowPos.x, (float)windowPos.y, 0.0f);
-	_ray.Direction = glm::vec3(0.0f, 0.0f, 1.0f);
-
-	return _ray;
-}*/ // old simple ray generation

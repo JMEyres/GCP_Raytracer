@@ -1,5 +1,6 @@
 #include "RayTracer.h"
 #include "GCP_GFX_Framework.h"
+#include <sstream>
 
 void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 {
@@ -8,62 +9,11 @@ void RayTracer::Render(Camera& camera, GCP_Framework& framework)
 
 	buffer.resize(camera.viewport.width * camera.viewport.height);
 
-	//for (int i = 0; i < passVector.size(); i++)
-	//{
-	//	passVector[i].resize();
-	//}
-
-	//memset(, 0, camera.viewport.width * camera.viewport.height * sizeof(glm::vec4));
-	//pixelColors.resize(camera.viewport.width * camera.viewport.height);
-	// essentially need to split this up into multiple rows and have a thread per row so would have window x the same and then window y/num threads to give each block
-	// then would would loop through all pixels in window x by block y
-
-	//std::thread::hardware_concurrency(); // tells you how many cores are available
-	
-	// loop through every pixel on the screen
-
-//#define MT 1
-#ifdef MT 1 // This method just uses all avaliable cores
-	std::for_each(std::execution::par, camera.hIterator.begin(), camera.hIterator.end(), [&](int y)
-		{
-			std::for_each(std::execution::par, camera.wIterator.begin(), camera.wIterator.end(), [&, y](int x)
-				{
-					for (int p = 0; p < passes; p++)
-					{
-						glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
-						glm::vec4 pixelColor = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
-						float y = pixelPosition.y;
-						float x = pixelPosition.x;
-						buffer[(float)(y * camera.viewport.width + x)] += pixelColor;
-						glm::vec4 bufferPixelColor = buffer[(float)(y * camera.viewport.width + x)];
-						framework.DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
-					}
-				});
-		});
-#else
 	glm::vec2 winsize = glm::vec2(camera.viewport.width, camera.viewport.height);
 	//std::thread::hardware_concurrency()
-	CreateThreads(8, winsize);
-	
-	//for (int i = 0; i < camera.viewport.width; i++)
-	//{
-	//	for (int j = 0; j < camera.viewport.height; j++)
-	//	{
-	//		for (int p = 0; p < passes; p++)
-	//		{
-	//			glm::ivec2 pixelPosition = { i, j }; // get the current pixel position
-	//			glm::vec4 pixelColor = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
-	//			float y = pixelPosition.y;
-	//			float x = pixelPosition.x;
-	//			buffer[(float)(y * camera.viewport.width + x)] += pixelColor;
-	//			glm::vec4 bufferPixelColor = buffer[(float)(y * camera.viewport.width + x)];
-	//			//glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
-	//			bufferPixelColor = glm::clamp(bufferPixelColor, glm::vec4(0), glm::vec4(1));
-	//			framework.DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
-	//		}
-	//	}
-	//}
-#endif
+	int numThreads = 4;
+	totalPassTimes.resize(numThreads);
+	CreateThreads(numThreads, winsize);
 
 }
 
@@ -79,7 +29,6 @@ void RayTracer::CreateSphere(glm::vec3 pos, float radius, int matIndex)
 
 void RayTracer::CreateMats()
 {
-	//glm::vec3 _color, float roughness, float metalness, glm::vec3 emissionColor, float emissionStrength
 	Material orangeSphere;
 	orangeSphere.albedo = glm::vec3(0.8f, 0.5f, 0.2f);
 	orangeSphere.roughness = 0.1f;
@@ -130,7 +79,6 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 		if (hitInfo.hitDistance < 0.0f) // if ray hits nothing
 		{
 			glm::vec3 skyColor = glm::vec3(0.6f, 0.7f, 0.9f); // spheres appear to reflect the sky giving them a strange tint
-			//glm::vec3 skyColor = glm::vec3(0); // spheres appear to reflect the sky giving them a strange tint
 			color += skyColor * multiplier;
 			break;
 		}
@@ -155,10 +103,10 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 		HitInfo shadowHitInfo = TraceRay(shadowRay);
 		if (shadowHitInfo.hitDistance > 0.0f)
 		{
-			//std::cout << "SHADE " << std::endl;
 			color = glm::vec3(0.0f);
 		}
-#define EM
+
+#define E
 #ifdef EM 
 		ray.direction = glm::normalize(hitInfo.hitNormal + Utils::InUnitSphere()); // use emissive lights
 	}
@@ -229,32 +177,18 @@ RayTracer::HitInfo RayTracer::Miss(const Ray& ray)
 	return hitinfo;
 };
 
-// Old, less clean intersection check
-/*float d = glm::length(Position - _ray.Origin - (glm::dot((Position - _ray.Origin), _ray.Direction)) * _ray.Direction);
-	float x = glm::sqrt((Radius * Radius) - (d * d));
-	glm::vec3 closestIntersect = _ray.Origin + ((glm::dot((Position - _ray.Origin), _ray.Direction) - x) * _ray.Direction);
-
-	float direction = glm::dot((Position - _ray.Origin), _ray.Direction);
-
-	if (direction < 0)
-		return Sphere::HitInfo{ false, glm::vec3(0.0,0.0,0.0) };
-
-	if (d > Radius)
-		return Sphere::HitInfo{ false, glm::vec3(0.0,0.0,0.0) };
-
-	return Sphere::HitInfo{ true, closestIntersect };*/
-
-
 void RayTracer::ParallelRayTrace(Chunk chunk)
 {
-	//std::cout << "chunk: " << " colSize: " << chunk.colSize << " rowStart: " << chunk.rowStart << " rowEnd: " << chunk.rowEnd << std::endl;
 	std::vector<glm::vec4> parallelBuffer;
-	
-	for (int i = 0; i < chunk.colSize; i++) // chunk starting x pos should always be 0
+	std::vector<std::string> passTimes;
+
+	std::chrono::steady_clock::time_point time1 =
+		std::chrono::high_resolution_clock::now();
+	for (int p = 0; p < passes; p++)
 	{
-		for (int j = chunk.rowStart; j < chunk.rowEnd; j++) // chunk starting y pos should iterate up
+		for (int i = 0; i < chunk.colSize; i++) // chunk starting x pos should always be 0
 		{
-			for (int p = 0; p < passes; p++)
+			for (int j = chunk.rowStart; j < chunk.rowEnd; j++) // chunk starting y pos should iterate up
 			{
 				glm::ivec2 pixelPosition = { i, j }; // get the current pixel position
 				glm::vec4 pixelColor = PerPixel(pixelPosition.x, pixelPosition.y); // pass that pixel into our per pixel function
@@ -267,12 +201,34 @@ void RayTracer::ParallelRayTrace(Chunk chunk)
 				myFramework->DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
 			}
 		}
+
+		std::chrono::steady_clock::time_point time2 =
+			std::chrono::high_resolution_clock::now(); // take the time after the render
+
+		std::chrono::milliseconds milliseconds =
+			std::chrono::duration_cast<std::chrono::milliseconds> (time2 - time1);
+
+		std::ostringstream passString;
+		passString << "Pass " << p << ":" << milliseconds.count() << "\n";
+		std::string test = passString.str();
+		passTimes.push_back(test);
 	}
+	std::chrono::steady_clock::time_point time3 =
+		std::chrono::high_resolution_clock::now(); // take the time after the render
+
+	std::chrono::milliseconds milliseconds =
+		std::chrono::duration_cast<std::chrono::milliseconds> (time3 - time1);
+	// write performance to file
+		std::ofstream fs;
+		fs.open("../perfomance.txt", std::ofstream::app);
+		for (int i = 0; i < passTimes.size(); i++)
+			fs << passTimes[i];
+		fs << "Thread time: " << milliseconds.count() << "\n" << "\n";
+		fs.close();
 }
 
 void RayTracer::CreateThreads(int numThreads, glm::ivec2 winSize)
 {
-	std::mutex mtx;
 	int rowsPerThread = winSize.y / numThreads;
 
 	for (int i = 0; i < numThreads; i++)
@@ -282,11 +238,8 @@ void RayTracer::CreateThreads(int numThreads, glm::ivec2 winSize)
 		chunk.rowStart = i * rowsPerThread;
 		chunk.rowEnd = chunk.rowStart + rowsPerThread;
 		std::cout << "chunk: " << i << " colSize: " << chunk.colSize << " rowStart: " << chunk.rowStart << " rowEnd: " << chunk.rowEnd << std::endl;
-		//chunks.push_back(chunk);
-		//mtx.lock();
 		std::thread chunkThread([chunk, this] { this->ParallelRayTrace(chunk); });
 		threads.push_back(std::move(chunkThread));
-		//mtx.unlock()
 	}
 	std::cout << threads.size() << std::endl;
 	for (std::thread& t : threads)
