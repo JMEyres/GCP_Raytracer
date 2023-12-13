@@ -2,21 +2,39 @@
 #include "GCP_GFX_Framework.h"
 #include <sstream>
 
-void RayTracer::Render(Camera& camera, GCP_Framework& framework)
+/// <summary>
+/// This is the main render function for the raytracer, it is where you define the amount of threads needed and it runs the actual raytracer
+/// </summary>
+/// <param name="camera"></param>
+/// <param name="framework"></param>
+void RayTracer::Render(Camera& camera, GCP_Framework& framework, int numThreads)
 {
 	activeCamera = &camera;
 	myFramework = &framework;
+	threadCount = numThreads;
 
 	buffer.resize(camera.viewport.width * camera.viewport.height);
 
 	glm::vec2 winsize = glm::vec2(camera.viewport.width, camera.viewport.height);
-	//std::thread::hardware_concurrency()
-	int numThreads = 4;
-	totalPassTimes.resize(numThreads);
-	CreateThreads(numThreads, winsize);
+	if(threadCount <= std::thread::hardware_concurrency()) // Put some safety guards in so you cannot set to more threads than you have available
+	{
+		totalPassTimes.resize(threadCount);
+		CreateThreads(threadCount, winsize);
+	}
+	else
+	{
+		totalPassTimes.resize(std::thread::hardware_concurrency());
+		CreateThreads(std::thread::hardware_concurrency(), winsize);
+	}
 
 }
 
+/// <summary>
+/// This function creates the spheres
+/// </summary>
+/// <param name="pos"> Position of the center of the sphere</param>
+/// <param name="radius"></param>
+/// <param name="matIndex"> The material you wish to use </param>
 void RayTracer::CreateSphere(glm::vec3 pos, float radius, int matIndex)
 {
 	Sphere sphere;
@@ -26,7 +44,9 @@ void RayTracer::CreateSphere(glm::vec3 pos, float radius, int matIndex)
 	objectList.push_back(sphere);
 }
 
-
+/// <summary>
+/// This function is to create the different materials used for the spheres
+/// </summary>
 void RayTracer::CreateMats()
 {
 	Material orangeSphere;
@@ -57,6 +77,13 @@ void RayTracer::CreateMats()
 	materialList.push_back(whiteSphere);
 
 }
+
+/// <summary>
+/// This is the function to be ran every pixel that is responsible for shooting the actual rays and returning the color depending on the intersection check, this is also where you define if you want the raytracer to be in standard or emissive mode
+/// </summary>
+/// <param name="x"> Pixel X position </param>
+/// <param name="y"> Pixel Y position </param>
+/// <returns> The color or light level depending on the mode </returns>
 glm::vec4 RayTracer::PerPixel(int x, int y)
 {
 	Ray ray = activeCamera->castRay(x, y, activeCamera->proj, activeCamera->view); // complex ray generation per pixel on screen
@@ -106,7 +133,8 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 			color = glm::vec3(0.0f);
 		}
 
-#define E
+// Uncomment the next line to enable emissive materials
+//#define EM
 #ifdef EM 
 		ray.direction = glm::normalize(hitInfo.hitNormal + Utils::InUnitSphere()); // use emissive lights
 	}
@@ -121,6 +149,11 @@ glm::vec4 RayTracer::PerPixel(int x, int y)
 #endif // EM 0
 }
 
+/// <summary>
+/// This performs the intersection check on the ray
+/// </summary>
+/// <param name="ray"></param>
+/// <returns>The closest hit info or miss info depending on result</returns>
 RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
 {
 	// init vars
@@ -154,6 +187,14 @@ RayTracer::HitInfo RayTracer::TraceRay(const Ray& ray) // intersection check
 		return ClosestHit(ray, hitDistance, closestSphere);
 }
 
+
+/// <summary>
+/// This function simple populates and returns the hit info structure for the closest sphere hit in the intersection check
+/// </summary>
+/// <param name="ray"></param>
+/// <param name="hitDistance"></param>
+/// <param name="objectIndex"></param>
+/// <returns> Hit information on the closest sphere </returns>
 RayTracer::HitInfo RayTracer::ClosestHit(const Ray& ray, float hitDistance, int objectIndex) // define what is the closest object to be hit
 {
 	RayTracer::HitInfo hitInfo;
@@ -170,6 +211,11 @@ RayTracer::HitInfo RayTracer::ClosestHit(const Ray& ray, float hitDistance, int 
 	return hitInfo;
 };
 
+/// <summary>
+/// Returns an miss hit info if the ray doesnt hit anything on the intersection check
+/// </summary>
+/// <param name="ray"></param>
+/// <returns> Empty hit info </returns>
 RayTracer::HitInfo RayTracer::Miss(const Ray& ray) 
 {
 	RayTracer::HitInfo hitinfo;
@@ -177,6 +223,11 @@ RayTracer::HitInfo RayTracer::Miss(const Ray& ray)
 	return hitinfo;
 };
 
+/// <summary>
+/// Function to be used per thread to render each chunk of the image, also takes the time taken per pass
+/// This function is responsible for running every other function needed for the ray tracers core loop 
+/// </summary>
+/// <param name="chunk"></param>
 void RayTracer::ParallelRayTrace(Chunk chunk)
 {
 	std::vector<glm::vec4> parallelBuffer;
@@ -196,7 +247,6 @@ void RayTracer::ParallelRayTrace(Chunk chunk)
 				float x = pixelPosition.x;
 				buffer[(float)(y * chunk.colSize + x)] += pixelColor;
 				glm::vec4 bufferPixelColor = buffer[(float)(y * chunk.colSize + x)];
-				//glm::ivec2 pixelPosition = { x, y }; // get the current pixel position
 				bufferPixelColor = glm::clamp(bufferPixelColor, glm::vec4(0), glm::vec4(1));
 				myFramework->DrawPixel(pixelPosition, bufferPixelColor); // draw the pixel
 			}
@@ -227,9 +277,14 @@ void RayTracer::ParallelRayTrace(Chunk chunk)
 		fs.close();
 }
 
+/// <summary>
+/// This function is responsible for dividing up the image and creating a thread for each row
+/// </summary>
+/// <param name="numThreads"></param>
+/// <param name="winSize"></param>
 void RayTracer::CreateThreads(int numThreads, glm::ivec2 winSize)
 {
-	int rowsPerThread = winSize.y / numThreads;
+	int rowsPerThread = winSize.y / numThreads; // give the amount of pixel rows per thread
 
 	for (int i = 0; i < numThreads; i++)
 	{
@@ -239,7 +294,7 @@ void RayTracer::CreateThreads(int numThreads, glm::ivec2 winSize)
 		chunk.rowEnd = chunk.rowStart + rowsPerThread;
 		std::cout << "chunk: " << i << " colSize: " << chunk.colSize << " rowStart: " << chunk.rowStart << " rowEnd: " << chunk.rowEnd << std::endl;
 		std::thread chunkThread([chunk, this] { this->ParallelRayTrace(chunk); });
-		threads.push_back(std::move(chunkThread));
+		threads.push_back(std::move(chunkThread)); // keeps a list of all the threads
 	}
 	std::cout << threads.size() << std::endl;
 	for (std::thread& t : threads)

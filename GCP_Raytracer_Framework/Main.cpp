@@ -6,6 +6,7 @@ int main(int argc, char* argv[])
 {
 	// Set window size
 	glm::ivec2 winSize(640, 480);
+	int numThreads = 4;
 
 	std::ofstream fs;
 	fs.open("../perfomance.txt");
@@ -39,7 +40,7 @@ int main(int argc, char* argv[])
 	std::chrono::steady_clock::time_point time1 =
 		std::chrono::high_resolution_clock::now(); // Take the time before the render
 
-	_rayTracer.Render(_camera, _myFramework); // do the actual ray tracing
+	_rayTracer.Render(_camera, _myFramework, numThreads); // do the actual ray tracing
 
 	std::chrono::steady_clock::time_point time2 =
 		std::chrono::high_resolution_clock::now(); // take the time after the render

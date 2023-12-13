@@ -1,5 +1,9 @@
 #include "Camera.h"
 
+/// <summary>
+/// Define the parameters of the camera here
+/// </summary>
+/// <param name="windowSize"></param>
 void Camera::setupCamera(glm::ivec2 windowSize)
 {
 
@@ -13,6 +17,14 @@ void Camera::setupCamera(glm::ivec2 windowSize)
 	model = glm::mat4(1.0f);
 }
 
+/// <summary>
+/// The function used to cast rays from the camera onto the scene using complex ray generation with near planes and far planes
+/// </summary>
+/// <param name="x"></param>
+/// <param name="y"></param>
+/// <param name="proj"></param>
+/// <param name="view"></param>
+/// <returns> The ray generated </returns>
 Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex ray generation
 {
 	Ray ray;
@@ -29,6 +41,14 @@ Ray Camera::castRay(int x, int y, glm::mat4& proj, glm::mat4& view) // Complex r
 	return ray;
 }
 
+/// <summary>
+/// This function is used to convert coordinates into normalised device coordinates which gets them into a -1 to 1 scale
+/// </summary>
+/// <param name="coords"></param>
+/// <param name="view"></param>
+/// <param name="proj"></param>
+/// <param name="viewport"></param>
+/// <returns> Normalised device coordinates of inputted pixels </returns>
 glm::vec3 const Camera::convertToNDC(glm::vec3 const coords, glm::mat4 const view, glm::mat4 const proj, glm::vec4 const viewport)
 {
 	glm::mat4 inverse = glm::inverse(proj * view);

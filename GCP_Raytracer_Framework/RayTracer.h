@@ -34,7 +34,7 @@ public:
 	std::vector<Sphere> objectList;
 	std::vector<Material> materialList;
 
-	void Render(Camera& camera, GCP_Framework& framework);
+	void Render(Camera& camera, GCP_Framework& framework, int numThreads);
 	void CreateSphere(glm::vec3 _pos, float _radius, int matIndex);
 	void CreateMats();
 
@@ -45,10 +45,12 @@ public:
 	HitInfo Miss(const Ray& ray);
 
 	void ParallelRayTrace(Chunk chunk);
+	int threadCount = 0;
 	std::vector<Chunk> chunks;
 	std::vector<std::thread> threads;
 	const static int passes = 5;
 	void CreateThreads(int numThreads, glm::ivec2 winSize);
+
 
 	std::vector<std::vector<std::string>> totalPassTimes;
 private:
